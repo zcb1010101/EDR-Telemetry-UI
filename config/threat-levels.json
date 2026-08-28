@@ -1,0 +1,30 @@
+﻿{
+  "schema_version": "1.0",
+  "levels": {
+    "LV0": {
+      "label_zh": "无风险",
+      "description_zh": "信息采集与只读行为，不修改系统状态。",
+      "color": "Green"
+    },
+    "LV1": {
+      "label_zh": "低风险",
+      "description_zh": "常规应用行为，清理后无残留，需要记录与确认。",
+      "color": "Yellow"
+    },
+    "LV2": {
+      "label_zh": "中风险",
+      "description_zh": "持久化或系统修改行为，需要管理员权限与精确清理。",
+      "color": "Magenta"
+    },
+    "LV3": {
+      "label_zh": "高风险",
+      "description_zh": "注入、篡改、WMI 持久化等高风险行为，仅允许在隔离测试机执行。",
+      "color": "Red"
+    }
+  },
+  "rules": {
+    "admin_required": "当场景 RequiresAdmin=true 且当前进程非管理员时，状态为 SKIPPED/ADMINISTRATOR_REQUIRED。",
+    "cleanup_failed": "清理失败时状态为 CLEANUP_ERROR，并停止后续高危场景。",
+    "threat_override": "调用方可通过 -ThreatLevel 覆盖目录默认评级。"
+  }
+}

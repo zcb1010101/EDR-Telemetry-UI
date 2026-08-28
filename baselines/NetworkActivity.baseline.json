@@ -1,0 +1,705 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "Network Activity",
+    "title":  "Network Activity 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.network.tcp",
+                          "version":  "2.0.0",
+                          "title":  "TcpConnection 遥测基线",
+                          "description":  "验证 network.tcp_connect 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.network.tcp",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "network.tcp_connect",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.network.protocol",
+                                                               "cloud_field":  "network.transport",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "lowercase"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.network.tcp-event",
+                                                         "event_type":  "network",
+                                                         "event_actions":  "tcp_connect",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.transport",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.network.protocol",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.network.udp",
+                          "version":  "2.0.0",
+                          "title":  "UdpConnection 遥测基线",
+                          "description":  "验证 network.udp_connect 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.network.udp",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "network.udp_connect",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.network.protocol",
+                                                               "cloud_field":  "network.transport",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "lowercase"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.network.udp-event",
+                                                         "event_type":  "network",
+                                                         "event_actions":  "udp_connect",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.transport",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.network.protocol",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.network.url_access",
+                          "version":  "2.0.0",
+                          "title":  "UrlAccess 遥测基线",
+                          "description":  "验证 network.url_access 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.network.url_access",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "network.url_access",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.network.destination_port",
+                                                               "cloud_field":  "network.destination_port",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.network.url_access-event",
+                                                         "event_type":  "network",
+                                                         "event_actions":  "url_access",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.transport",
+                                                                                "operator":  "equals",
+                                                                                "expected":  "tcp",
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "url.full",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.network.url",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.network.dns_query",
+                          "version":  "2.0.0",
+                          "title":  "DnsQuery 遥测基线",
+                          "description":  "验证 network.dns_query 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.network.dns_query",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "network.dns_query",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.network.protocol",
+                                                               "cloud_field":  "network.transport",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "lowercase"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.network.dns_query-event",
+                                                         "event_type":  "network",
+                                                         "event_actions":  "dns_query",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.transport",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.network.protocol",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.network.file_download",
+                          "version":  "2.0.0",
+                          "title":  "FileDownload 遥测基线",
+                          "description":  "验证 network.file_download 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV2",
+                          "capability":  {
+                                             "id":  "win.network.file_download",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "network.file_download",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.network.protocol",
+                                                               "cloud_field":  "network.transport",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "lowercase"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "all"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "download-connection-stage",
+                                                         "method":  {
+                                                                        "id":  "connection",
+                                                                        "title":  "网络连接"
+                                                                    },
+                                                         "stage":  null,
+                                                         "event_type":  "network",
+                                                         "event_actions":  [
+                                                                               "tcp_connect"
+                                                                           ],
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  10
+                                                                         },
+                                                         "correlation":  {
+                                                                             "time_from_local":  null,
+                                                                             "max_time_difference_ms":  1000,
+                                                                             "keys":  [
+                                                                                          {
+                                                                                              "local_field":  "process.pid",
+                                                                                              "cloud_field":  "process.pid",
+                                                                                              "operator":  "equals",
+                                                                                              "normalizers":  [
+
+                                                                                                              ]
+                                                                                          }
+                                                                                      ]
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.transport",
+                                                                                "operator":  "equals",
+                                                                                "expected":  "tcp",
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "network.source_ip",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     },
+                                                     {
+                                                         "id":  "download-file-write-stage",
+                                                         "method":  {
+                                                                        "id":  "file_write",
+                                                                        "title":  "文件写入"
+                                                                    },
+                                                         "stage":  null,
+                                                         "event_type":  "file",
+                                                         "event_actions":  [
+                                                                               "create",
+                                                                               "modify"
+                                                                           ],
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  10
+                                                                         },
+                                                         "correlation":  {
+                                                                             "time_from_local":  null,
+                                                                             "max_time_difference_ms":  2000,
+                                                                             "keys":  [
+                                                                                          {
+                                                                                              "local_field":  "data.file.name",
+                                                                                              "cloud_field":  "file.name",
+                                                                                              "operator":  "equals",
+                                                                                              "normalizers":  [
+                                                                                                                  "lowercase"
+                                                                                                              ]
+                                                                                          }
+                                                                                      ]
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.file.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.file.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.size",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.file.size",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha256",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.file.hash_sha256",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

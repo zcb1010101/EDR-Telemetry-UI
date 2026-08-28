@@ -1,0 +1,1052 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "Hash Algorithms",
+    "title":  "Hash Algorithms 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.md5",
+                          "version":  "2.0.0",
+                          "title":  "Md5Hash 遥测基线",
+                          "description":  "验证 hash.md5 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.md5",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.md5",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.md5-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.md5",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.md5.txt",
+                          "version":  "2.0.0",
+                          "title":  "Md5HashTxt 遥测基线",
+                          "description":  "验证 hash.md5 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.md5.txt",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.md5",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.md5.txt-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.md5",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.md5.json",
+                          "version":  "2.0.0",
+                          "title":  "Md5HashJson 遥测基线",
+                          "description":  "验证 hash.md5 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.md5.json",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.md5",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.md5.json-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.md5",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.md5.dll",
+                          "version":  "2.0.0",
+                          "title":  "Md5HashDll 遥测基线",
+                          "description":  "验证 hash.md5 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.md5.dll",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.md5",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.md5.dll-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.md5",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.sha",
+                          "version":  "2.0.0",
+                          "title":  "ShaHash 遥测基线",
+                          "description":  "验证 hash.sha 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.sha",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.sha",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.sha-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha256",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha1",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.sha1",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.sha.txt",
+                          "version":  "2.0.0",
+                          "title":  "ShaHashTxt 遥测基线",
+                          "description":  "验证 hash.sha 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.sha.txt",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.sha",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.sha.txt-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha256",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha1",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.sha1",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.sha.json",
+                          "version":  "2.0.0",
+                          "title":  "ShaHashJson 遥测基线",
+                          "description":  "验证 hash.sha 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.sha.json",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.sha",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.sha.json-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha256",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha1",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.sha1",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.sha.dll",
+                          "version":  "2.0.0",
+                          "title":  "ShaHashDll 遥测基线",
+                          "description":  "验证 hash.sha 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.sha.dll",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.sha",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.sha.dll-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha256",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.sha1",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.sha1",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.hash.imphash",
+                          "version":  "2.0.0",
+                          "title":  "Imphash 遥测基线",
+                          "description":  "验证 hash.imphash 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.hash.imphash",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "hash.imphash",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.hash.name",
+                                                           "cloud_field":  "file.name",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "lowercase"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.hash.imphash-event",
+                                                         "event_type":  "file",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "file.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.hash.imphash",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.hash.value",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "lowercase"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.format",
+                                                                                "operator":  "contains",
+                                                                                "expected":  "PE",
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

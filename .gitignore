@@ -1,0 +1,18 @@
+# ===== 运行时产物(自动生成,不入库) =====
+.platform/
+logs/
+runs/
+reports/
+temp_file/
+server/work/
+import/
+
+# ===== Node.js =====
+node_modules/
+*.log
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

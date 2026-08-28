@@ -1,0 +1,334 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "WMI Activity",
+    "title":  "WMI Activity 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.wmi.consumer_filter_binding",
+                          "version":  "2.0.0",
+                          "title":  "WmiConsumerFilterBinding 遥测基线",
+                          "description":  "验证 wmi.consumer_filter_binding 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV3",
+                          "capability":  {
+                                             "id":  "win.wmi.consumer_filter_binding",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "wmi.consumer_filter_binding",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.wmi.name",
+                                                               "cloud_field":  "wmi.object_name",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.wmi.consumer_filter_binding-event",
+                                                         "event_type":  "wmi",
+                                                         "event_actions":  "consumer_filter_bind",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "wmi.object_name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "wmi.namespace",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.namespace",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.wmi.event_consumer",
+                          "version":  "2.0.0",
+                          "title":  "WmiEventConsumer 遥测基线",
+                          "description":  "验证 wmi.event_consumer 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV3",
+                          "capability":  {
+                                             "id":  "win.wmi.event_consumer",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "wmi.event_consumer",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.wmi.name",
+                                                               "cloud_field":  "wmi.object_name",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.wmi.event_consumer-event",
+                                                         "event_type":  "wmi",
+                                                         "event_actions":  "consumer",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "wmi.object_name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "wmi.namespace",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.namespace",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.wmi.event_filter",
+                          "version":  "2.0.0",
+                          "title":  "WmiEventFilter 遥测基线",
+                          "description":  "验证 wmi.event_filter 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV3",
+                          "capability":  {
+                                             "id":  "win.wmi.event_filter",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "wmi.event_filter",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.wmi.name",
+                                                               "cloud_field":  "wmi.object_name",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.wmi.event_filter-event",
+                                                         "event_type":  "wmi",
+                                                         "event_actions":  "filter",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "wmi.object_name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "wmi.namespace",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.wmi.namespace",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

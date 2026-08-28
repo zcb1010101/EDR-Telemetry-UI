@@ -1,0 +1,760 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "Process Activity",
+    "title":  "Process Activity 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.create",
+                          "version":  "2.0.0",
+                          "title":  "ProcessCreation 遥测基线",
+                          "description":  "验证 process.create 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.process.create",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.create",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.process.executable",
+                                                               "cloud_field":  "process.executable",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.create-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.command_line",
+                                                                                "operator":  "contains",
+                                                                                "expected":  "${nonce}",
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "parent_process.name",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.name",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "parent_process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.start",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.start_time",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "timestamp_utc"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "parent_process.start",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.start_time",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+                                                                                                    "timestamp_utc"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.terminate",
+                          "version":  "2.0.0",
+                          "title":  "ProcessTermination 遥测基线",
+                          "description":  "验证 process.terminate 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.process.terminate",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.terminate",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.process.executable",
+                                                               "cloud_field":  "process.executable",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.terminate-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "terminate",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.access",
+                          "version":  "2.0.0",
+                          "title":  "ProcessAccess 遥测基线",
+                          "description":  "验证 process.access 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.process.access",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.access",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.process.executable",
+                                                               "cloud_field":  "process.executable",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.access-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "access",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "source_process.pid",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.image_load",
+                          "version":  "2.0.0",
+                          "title":  "ImageLibraryLoad 遥测基线",
+                          "description":  "验证 process.image_load 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.process.image_load",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.image_load",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.image.path",
+                                                               "cloud_field":  "file.path",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.image_load-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "image_load",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "file.path",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.image.path",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.remote_thread",
+                          "version":  "2.0.0",
+                          "title":  "RemoteThreadCreation 遥测基线",
+                          "description":  "验证 process.remote_thread 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV2",
+                          "capability":  {
+                                             "id":  "win.process.remote_thread",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.remote_thread",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.process.executable",
+                                                               "cloud_field":  "process.executable",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.remote_thread-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "remote_thread_create",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "thread.id",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "thread.start_address",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "recommended",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.process.tampering",
+                          "version":  "2.0.0",
+                          "title":  "ProcessTampering 遥测基线",
+                          "description":  "验证 process.tampering 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV3",
+                          "capability":  {
+                                             "id":  "win.process.tampering",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "process.tampering",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  [
+                                                           {
+                                                               "local_field":  "data.process.pid",
+                                                               "cloud_field":  "process.pid",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+
+                                                                               ]
+                                                           },
+                                                           {
+                                                               "local_field":  "data.process.executable",
+                                                               "cloud_field":  "process.executable",
+                                                               "operator":  "equals",
+                                                               "normalizers":  [
+                                                                                   "windows_path"
+                                                                               ]
+                                                           }
+                                                       ]
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.process.tampering-event",
+                                                         "event_type":  "process",
+                                                         "event_actions":  "tamper",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.executable",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.process.executable",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "windows_path"
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

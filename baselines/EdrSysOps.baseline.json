@@ -1,0 +1,601 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "EDR SysOps",
+    "title":  "EDR SysOps 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_start",
+                          "version":  "2.0.0",
+                          "title":  "AgentStart 遥测基线",
+                          "description":  "验证 edr_sysops.agent_start 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_start",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_start",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_start-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_start",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_stop",
+                          "version":  "2.0.0",
+                          "title":  "AgentStop 遥测基线",
+                          "description":  "验证 edr_sysops.agent_stop 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_stop",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_stop",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_stop-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_stop",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_install",
+                          "version":  "2.0.0",
+                          "title":  "AgentInstall 遥测基线",
+                          "description":  "验证 edr_sysops.agent_install 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_install",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_install",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_install-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_install",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_uninstall",
+                          "version":  "2.0.0",
+                          "title":  "AgentUninstall 遥测基线",
+                          "description":  "验证 edr_sysops.agent_uninstall 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_uninstall",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_uninstall",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_uninstall-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_uninstall",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_keepalive",
+                          "version":  "2.0.0",
+                          "title":  "AgentKeepAlive 遥测基线",
+                          "description":  "验证 edr_sysops.agent_keepalive 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV0",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_keepalive",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_keepalive",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_keepalive-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_keepalive",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      },
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.edr_sysops.agent_error",
+                          "version":  "2.0.0",
+                          "title":  "AgentError 遥测基线",
+                          "description":  "验证 edr_sysops.agent_error 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV1",
+                          "capability":  {
+                                             "id":  "win.edr_sysops.agent_error",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "edr_sysops.agent_error",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "process.pid",
+                                                           "cloud_field":  "process.pid",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.edr_sysops.agent_error-event",
+                                                         "event_type":  "edr_sysops",
+                                                         "event_actions":  "agent_error",
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "agent.service_name",
+                                                                                "operator":  "present",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "process.pid",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "process.pid",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

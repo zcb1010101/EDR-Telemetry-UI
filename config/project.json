@@ -1,0 +1,19 @@
+﻿{
+    "schema_version": "2.0",
+    "project_name": "EDR Telemetry Offline",
+    "default_run_dir": "runs",
+    "default_log_dir": "logs",
+    "default_import_dir": "import",
+    "default_report_dir": "reports",
+    "default_interval_seconds": 3,
+    "min_interval_seconds": 0,
+    "max_interval_seconds": 300,
+    "default_vendor": "tencent",
+    "time_before_seconds": 60,
+    "time_after_seconds": 300,
+    "default_max_time_difference_ms": 3000,
+    "max_displayed_candidates": 50,
+    "cleanup_timeout_seconds": 30,
+    "usb_wait_seconds": 60,
+    "file_behavior_hold_ms": 2000
+}

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EDR 遥测离线验证平台</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EDR</div>
+        <div>
+          <div class="brand-title">遥测离线验证</div>
+          <div class="brand-subtitle">Local Operations</div>
+        </div>
+      </div>
+      <nav class="nav-list" aria-label="主导航">
+        <button class="nav-item active" data-view="run">
+          <span class="nav-icon" aria-hidden="true">&#9670;</span>
+          <span>场景运行</span>
+        </button>
+        <button class="nav-item" data-view="compare">
+          <span class="nav-icon" aria-hidden="true">&#8646;</span>
+          <span>日志对比</span>
+        </button>
+        <button class="nav-item" data-view="result">
+          <span class="nav-icon" aria-hidden="true">&#9636;</span>
+          <span>结果输出</span>
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="server-dot" id="serverDot"></div>
+        <div>
+          <div class="server-label">本地服务</div>
+          <div class="server-detail" id="serverDetail">正在检测</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="view active" id="view-run">
+        <header class="page-header">
+          <div>
+            <div class="eyebrow">Scenario Runner</div>
+            <h1>场景运行</h1>
+            <p class="page-desc">选择单个场景、场景分类或全部场景，串行执行遥测采集与真伪校验。</p>
+          </div>
+          <div class="header-actions">
+            <span class="badge admin-badge" id="adminBadge">权限检测中</span>
+            <button class="button secondary" id="refreshCatalog" type="button">刷新目录</button>
+          </div>
+        </header>
+
+        <div class="control-band">
+          <div class="segmented" role="tablist" aria-label="运行模式">
+            <button class="segment active" data-mode="single" type="button">单个场景</button>
+            <button class="segment" data-mode="category" type="button">分场景类</button>
+            <button class="segment" data-mode="all" type="button">全场景</button>
+          </div>
+          <div class="control-inline">
+            <label class="field-label" for="intervalSeconds">轮询间隔</label>
+            <input class="input number-input" id="intervalSeconds" type="number" min="0" max="300" step="1" value="3">
+            <span class="unit">秒</span>
+            <button class="button primary" id="runSelected" type="button">开始运行</button>
+            <button class="button danger" id="cancelRun" type="button" disabled>停止</button>
+          </div>
+        </div>
+
+        <div class="hint-band" id="runHint">
+          <span class="hint-dot"></span>
+          <span>场景按轮询间隔串行执行。需管理员场景在普通权限下会记录为跳过，不会中断后续场景。</span>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-item">
+            <div class="stat-label">总选中场景数</div>
+            <div class="stat-value" id="statSelected">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">待运行</div>
+            <div class="stat-value" id="statPending">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">正在运行</div>
+            <div class="stat-value" id="statRunning">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">已运行</div>
+            <div class="stat-value" id="statCompleted">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">运行成功率</div>
+            <div class="stat-value" id="statRate">--</div>
+          </div>
+        </div>
+
+        <div class="toolbar" id="singleToolbar">
+          <input class="input search-input" id="scenarioSearch" type="search" placeholder="搜索场景名称或 ID">
+          <select class="select" id="threatFilter" aria-label="威胁级别筛选">
+            <option value="">全部威胁级别</option>
+            <option value="LV0">LV0</option>
+            <option value="LV1">LV1</option>
+            <option value="LV2">LV2</option>
+            <option value="LV3">LV3</option>
+          </select>
+          <select class="select" id="categoryFilter" aria-label="分类筛选">
+            <option value="">全部分类</option>
+          </select>
+          <div class="toolbar-spacer"></div>
+          <span class="muted" id="visibleScenarioCount"></span>
+        </div>
+
+        <div class="scenario-area" id="scenarioArea"></div>
+
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Runtime Log</div>
+            <h2>运行状态日志</h2>
+          </div>
+          <span class="status-pill" id="runStatePill">未运行</span>
+        </div>
+        <div class="log-panel">
+          <div class="log-toolbar">
+            <span class="muted">每步执行动作、场景结果与异常信息</span>
+            <button class="text-button" id="clearLog" type="button">清空日志</button>
+          </div>
+          <div class="log-output" id="logOutput">
+            <div class="log-empty">暂无运行日志</div>
+          </div>
+          <div class="run-result hidden" id="runResult"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-compare">
+        <header class="page-header">
+          <div>
+            <div class="eyebrow">Log Comparison</div>
+            <h1>日志对比</h1>
+            <p class="page-desc">导入本地运行日志与厂商日志，进行格式识别、可选标准化与离线比对。</p>
+          </div>
+        </header>
+
+        <div class="import-grid">
+          <article class="import-card">
+            <div class="import-head">
+              <div>
+                <div class="card-kicker">Local</div>
+                <h2>本地日志导入</h2>
+              </div>
+              <span class="status-pill" id="localImportStatus">待导入</span>
+            </div>
+            <p class="card-desc">选择 runs 目录中的 events.jsonl，后端会校验空文件、格式和基础记录。</p>
+            <input type="file" id="localFileInput" accept=".json,.jsonl,application/json" hidden>
+            <button class="button secondary" id="chooseLocalFile" type="button">选择本地日志</button>
+            <div class="file-meta" id="localFileMeta">尚未选择文件</div>
+            <button class="button primary full" id="uploadLocal" type="button" disabled>导入并校验</button>
+            <div class="path-box hidden" id="localPathBox">
+              <span class="muted">保存路径</span>
+              <code id="localSavedPath"></code>
+              <button class="text-button" data-copy-target="localSavedPath" type="button">复制路径</button>
+            </div>
+          </article>
+
+          <article class="import-card">
+            <div class="import-head">
+              <div>
+                <div class="card-kicker">Vendor</div>
+                <h2>厂商日志导入</h2>
+              </div>
+              <span class="status-pill" id="vendorImportStatus">待导入</span>
+            </div>
+            <p class="card-desc">导入厂商导出的 JSON 数组或 JSONL，可选择是否执行厂商日志标准化。</p>
+            <input type="file" id="vendorFileInput" accept=".json,.jsonl,application/json" hidden>
+            <button class="button secondary" id="chooseVendorFile" type="button">选择厂商日志</button>
+            <div class="file-meta" id="vendorFileMeta">尚未选择文件</div>
+            <div class="form-row">
+              <label class="field-label" for="vendorId">厂商映射</label>
+              <select class="select" id="vendorId">
+                <option value="tencent">Tencent EDR</option>
+                <option value="generic">Generic</option>
+              </select>
+            </div>
+            <label class="check-row">
+              <input type="checkbox" id="normalizeVendor" checked>
+              <span>导入后标准化</span>
+            </label>
+            <button class="button primary full" id="uploadVendor" type="button" disabled>导入厂商日志</button>
+            <div class="path-box hidden" id="vendorPathBox">
+              <span class="muted">保存路径</span>
+              <code id="vendorSavedPath"></code>
+              <button class="text-button" data-copy-target="vendorSavedPath" type="button">复制路径</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="compare-band">
+          <div>
+            <div class="eyebrow">Offline Compare</div>
+            <h2>开始离线比对</h2>
+            <p class="page-desc">使用已导入的本地日志与厂商日志执行原有 Comparator，不发送任何网络请求。</p>
+          </div>
+          <button class="button primary" id="startCompare" type="button" disabled>开始比对</button>
+        </div>
+
+        <div class="compare-result hidden" id="compareResult"></div>
+      </section>
+
+      <section class="view" id="view-result">
+        <header class="page-header">
+          <div>
+            <div class="eyebrow">Result Output</div>
+            <h1>结果输出</h1>
+            <p class="page-desc">导入或选择已有比对结果，查看占比、达标率、能力明细并导出 JSON、Markdown 或可视化 HTML。</p>
+          </div>
+        </header>
+
+        <div class="result-toolbar">
+          <input type="file" id="resultFileInput" accept=".json,application/json" hidden>
+          <button class="button secondary" id="chooseResultFile" type="button">导入比对结果</button>
+          <button class="button secondary" id="refreshReports" type="button">刷新最近结果</button>
+          <button class="button primary" id="exportJson" type="button" disabled>导出 JSON</button>
+          <button class="button primary" id="exportMarkdown" type="button" disabled>导出 Markdown</button>
+          <button class="button primary" id="exportHtml" type="button" disabled>导出可视化 HTML</button>
+        </div>
+
+        <div class="result-layout">
+          <div class="report-list">
+            <div class="section-heading compact">
+              <div>
+                <div class="eyebrow">Recent</div>
+                <h2>最近对比结果</h2>
+              </div>
+            </div>
+            <div class="report-items" id="reportItems">
+              <div class="empty-state">暂无可用结果</div>
+            </div>
+          </div>
+          <div class="report-preview" id="resultPreview">
+            <div class="empty-state large">请导入结果或从左侧选择最近结果</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

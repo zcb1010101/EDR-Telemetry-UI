@@ -1,0 +1,69 @@
+﻿Category,CategoryFolder,ScenarioId,ScenarioName,BehaviorKind,ThreatLevel,RequiresAdmin,Operation
+Process Activity,ProcessActivity,win.process.create,ProcessCreation,process.create,LV0,false,process.create
+Process Activity,ProcessActivity,win.process.terminate,ProcessTermination,process.terminate,LV1,false,process.terminate
+Process Activity,ProcessActivity,win.process.access,ProcessAccess,process.access,LV1,false,process.access
+Process Activity,ProcessActivity,win.process.image_load,ImageLibraryLoad,process.image_load,LV1,false,process.image_load
+Process Activity,ProcessActivity,win.process.remote_thread,RemoteThreadCreation,process.remote_thread,LV2,false,process.remote_thread
+Process Activity,ProcessActivity,win.process.tampering,ProcessTampering,process.tampering,LV3,false,process.tampering
+File Manipulation,FileManipulation,win.file.create,FileCreation,file.create,LV0,false,file.create
+File Manipulation,FileManipulation,win.file.create.txt,FileCreationTxt,file.create,LV0,false,file.create
+File Manipulation,FileManipulation,win.file.create.json,FileCreationJson,file.create,LV0,false,file.create
+File Manipulation,FileManipulation,win.file.create.dll,FileCreationDll,file.create,LV0,false,file.create
+File Manipulation,FileManipulation,win.file.open,FileOpen,file.open,LV0,false,file.open
+File Manipulation,FileManipulation,win.file.open.txt,FileOpenTxt,file.open,LV0,false,file.open
+File Manipulation,FileManipulation,win.file.open.json,FileOpenJson,file.open,LV0,false,file.open
+File Manipulation,FileManipulation,win.file.open.dll,FileOpenDll,file.open,LV0,false,file.open
+File Manipulation,FileManipulation,win.file.delete,FileDeletion,file.delete,LV1,false,file.delete
+File Manipulation,FileManipulation,win.file.delete.txt,FileDeletionTxt,file.delete,LV1,false,file.delete
+File Manipulation,FileManipulation,win.file.delete.json,FileDeletionJson,file.delete,LV1,false,file.delete
+File Manipulation,FileManipulation,win.file.delete.dll,FileDeletionDll,file.delete,LV1,false,file.delete
+File Manipulation,FileManipulation,win.file.modify,FileModification,file.modify,LV1,false,file.modify
+File Manipulation,FileManipulation,win.file.rename,FileRenaming,file.rename,LV1,false,file.rename
+User Account Activity,UserAccountActivity,win.account.local_create,LocalAccountCreation,account.local_create,LV2,true,account.local_create
+User Account Activity,UserAccountActivity,win.account.local_modify,LocalAccountModification,account.local_modify,LV2,true,account.local_modify
+User Account Activity,UserAccountActivity,win.account.local_delete,LocalAccountDeletion,account.local_delete,LV2,true,account.local_delete
+User Account Activity,UserAccountActivity,win.account.login,AccountLogin,account.login,LV1,true,account.login
+User Account Activity,UserAccountActivity,win.account.logoff,AccountLogoff,account.logoff,LV1,true,account.logoff
+Network Activity,NetworkActivity,win.network.tcp,TcpConnection,network.tcp,LV1,false,network.tcp_connect
+Network Activity,NetworkActivity,win.network.udp,UdpConnection,network.udp,LV1,false,network.udp_connect
+Network Activity,NetworkActivity,win.network.url_access,UrlAccess,network.url_access,LV1,false,network.url_access
+Network Activity,NetworkActivity,win.network.dns_query,DnsQuery,network.dns_query,LV1,false,network.dns_query
+Network Activity,NetworkActivity,win.network.file_download,FileDownload,network.file_download,LV2,false,network.file_download
+Hash Algorithms,HashAlgorithms,win.hash.md5,Md5Hash,hash.md5,LV0,false,hash.md5
+Hash Algorithms,HashAlgorithms,win.hash.md5.txt,Md5HashTxt,hash.md5,LV0,false,hash.md5
+Hash Algorithms,HashAlgorithms,win.hash.md5.json,Md5HashJson,hash.md5,LV0,false,hash.md5
+Hash Algorithms,HashAlgorithms,win.hash.md5.dll,Md5HashDll,hash.md5,LV0,false,hash.md5
+Hash Algorithms,HashAlgorithms,win.hash.sha,ShaHash,hash.sha,LV0,false,hash.sha
+Hash Algorithms,HashAlgorithms,win.hash.sha.txt,ShaHashTxt,hash.sha,LV0,false,hash.sha
+Hash Algorithms,HashAlgorithms,win.hash.sha.json,ShaHashJson,hash.sha,LV0,false,hash.sha
+Hash Algorithms,HashAlgorithms,win.hash.sha.dll,ShaHashDll,hash.sha,LV0,false,hash.sha
+Hash Algorithms,HashAlgorithms,win.hash.imphash,Imphash,hash.imphash,LV0,false,hash.imphash
+Registry Activity,RegistryActivity,win.registry.create,RegistryKeyValueCreation,registry.create,LV1,false,registry.create
+Registry Activity,RegistryActivity,win.registry.modify,RegistryKeyValueModification,registry.modify,LV1,false,registry.modify
+Registry Activity,RegistryActivity,win.registry.delete,RegistryKeyValueDeletion,registry.delete,LV1,false,registry.delete
+Schedule Task Activity,ScheduledTaskActivity,win.scheduled_task.create,ScheduledTaskCreation,scheduled_task.create,LV2,false,scheduled_task.create
+Schedule Task Activity,ScheduledTaskActivity,win.scheduled_task.modify,ScheduledTaskModification,scheduled_task.modify,LV2,false,scheduled_task.modify
+Schedule Task Activity,ScheduledTaskActivity,win.scheduled_task.delete,ScheduledTaskDeletion,scheduled_task.delete,LV2,false,scheduled_task.delete
+Service Activity,ServiceActivity,win.service.create,ServiceCreation,service.create,LV2,true,service.create
+Service Activity,ServiceActivity,win.service.modify,ServiceModification,service.modify,LV2,true,service.modify
+Service Activity,ServiceActivity,win.service.delete,ServiceDeletion,service.delete,LV2,true,service.delete
+Driver/Module Activity,DriverModuleActivity,win.driver.load,DriverLoad,driver.load,LV2,true,driver.load
+Driver/Module Activity,DriverModuleActivity,win.driver.modify,DriverModification,driver.modify,LV2,true,driver.modify
+Driver/Module Activity,DriverModuleActivity,win.driver.unload,DriverUnload,driver.unload,LV2,true,driver.unload
+Device Operations,DeviceOperations,win.device.virtual_disk_mount,VirtualDiskMount,device.virtual_disk_mount,LV1,false,device.virtual_disk_mount
+Device Operations,DeviceOperations,win.device.usb_unmount,UsbDeviceUnmount,device.usb_unmount,LV0,false,device.usb_unmount
+Device Operations,DeviceOperations,win.device.usb_mount,UsbDeviceMount,device.usb_mount,LV0,false,device.usb_mount
+Other Relevant Events,OtherRelevantEvents,win.group_policy.modify,GroupPolicyModification,group_policy.modify,LV2,true,group_policy.modify
+Named Pipe Activity,NamedPipeActivity,win.named_pipe.create,NamedPipeCreation,named_pipe.create,LV1,false,named_pipe.create
+Named Pipe Activity,NamedPipeActivity,win.named_pipe.connect,NamedPipeConnection,named_pipe.connect,LV1,false,named_pipe.connect
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_start,AgentStart,edr_sysops.agent_start,LV1,true,edr_sysops.agent_start
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_stop,AgentStop,edr_sysops.agent_stop,LV1,true,edr_sysops.agent_stop
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_install,AgentInstall,edr_sysops.agent_install,LV1,true,edr_sysops.agent_install
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_uninstall,AgentUninstall,edr_sysops.agent_uninstall,LV1,true,edr_sysops.agent_uninstall
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_keepalive,AgentKeepAlive,edr_sysops.agent_keepalive,LV0,false,edr_sysops.agent_keepalive
+EDR SysOps,EdrSysOps,win.edr_sysops.agent_error,AgentError,edr_sysops.agent_error,LV1,true,edr_sysops.agent_error
+WMI Activity,WmiActivity,win.wmi.consumer_filter_binding,WmiConsumerFilterBinding,wmi.consumer_filter_binding,LV3,true,wmi.consumer_filter_binding
+WMI Activity,WmiActivity,win.wmi.event_consumer,WmiEventConsumer,wmi.event_consumer,LV3,true,wmi.event_consumer
+WMI Activity,WmiActivity,win.wmi.event_filter,WmiEventFilter,wmi.event_filter,LV3,true,wmi.event_filter
+BITS JOBS Activity,BitsJobActivity,win.bits.job,BitsJob,bits.job,LV1,false,bits.job
+PowerShell Activity,PowerShellActivity,win.powershell.script_block,PowerShellScriptBlock,powershell.script_block,LV1,false,powershell.script_block

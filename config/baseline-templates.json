@@ -1,0 +1,1576 @@
+﻿{
+  "schema_version": "2.0",
+  "domains": {
+    "Process Activity": {
+      "event_type": "process",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.process.pid",
+          "cloud_field": "process.pid"
+        },
+        {
+          "local_field": "data.process.executable",
+          "cloud_field": "process.executable",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "data.process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "process.command_line",
+          "operator": "contains",
+          "expected": "${nonce}",
+          "severity": "required"
+        }
+      ]
+    },
+    "File Manipulation": {
+      "event_type": "file",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.file.name",
+          "cloud_field": "file.name",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.file.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.file.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "process.executable",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "User Account Activity": {
+      "event_type": "account",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.account.name",
+          "cloud_field": "user.target.name",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "user.target.name",
+          "operator": "equals",
+          "expected_from_local": "data.account.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "Network Activity": {
+      "event_type": "network",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        },
+        {
+          "local_field": "data.network.protocol",
+          "cloud_field": "network.transport",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "network.transport",
+          "operator": "equals",
+          "expected_from_local": "data.network.protocol",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "Hash Algorithms": {
+      "event_type": "file",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.hash.name",
+          "cloud_field": "file.name",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ]
+    },
+    "Registry Activity": {
+      "event_type": "registry",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.registry.key",
+          "cloud_field": "registry.key",
+          "normalizers": [
+            "registry_hive_path"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "registry.key",
+          "operator": "equals",
+          "expected_from_local": "data.registry.key",
+          "severity": "required",
+          "normalizers": [
+            "registry_hive_path"
+          ]
+        },
+        {
+          "field": "registry.value_name",
+          "operator": "equals",
+          "expected_from_local": "data.registry.value_name",
+          "severity": "required"
+        },
+        {
+          "field": "registry.value_data",
+          "operator": "contains",
+          "expected": "${nonce}",
+          "severity": "required"
+        }
+      ]
+    },
+    "Schedule Task Activity": {
+      "event_type": "scheduled_task",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.scheduled_task.name",
+          "cloud_field": "scheduled_task.name",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "scheduled_task.name",
+          "operator": "equals",
+          "expected_from_local": "data.scheduled_task.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "process.executable",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "Service Activity": {
+      "event_type": "service_api",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.service.name",
+          "cloud_field": "service.name",
+          "normalizers": [
+            "lowercase",
+            "trim"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "service.name",
+          "operator": "equals",
+          "expected_from_local": "data.service.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase",
+            "trim"
+          ]
+        },
+        {
+          "field": "service.binary_path",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "Driver/Module Activity": {
+      "event_type": "driver",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 3000,
+      "keys": [
+        {
+          "local_field": "data.driver.name",
+          "cloud_field": "driver.name",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "driver.name",
+          "operator": "equals",
+          "expected_from_local": "data.driver.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "driver.image_path",
+          "operator": "equals",
+          "expected_from_local": "data.driver.image_path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ]
+    },
+    "Device Operations": {
+      "event_type": "device",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "device.type",
+          "operator": "present",
+          "severity": "required"
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    },
+    "Other Relevant Events": {
+      "event_type": "registry",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.policy.key",
+          "cloud_field": "registry.key",
+          "normalizers": [
+            "registry_hive_path"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "registry.key",
+          "operator": "equals",
+          "expected_from_local": "data.policy.key",
+          "severity": "required",
+          "normalizers": [
+            "registry_hive_path"
+          ]
+        },
+        {
+          "field": "registry.value_data",
+          "operator": "contains",
+          "expected": "${nonce}",
+          "severity": "required"
+        }
+      ]
+    },
+    "Named Pipe Activity": {
+      "event_type": "named_pipe",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.pipe.name",
+          "cloud_field": "named_pipe.name",
+          "normalizers": [
+            "named_pipe_path"
+          ]
+        },
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "named_pipe.name",
+          "operator": "equals",
+          "expected_from_local": "data.pipe.name",
+          "severity": "required",
+          "normalizers": [
+            "named_pipe_path"
+          ]
+        },
+        {
+          "field": "named_pipe.operation_name",
+          "operator": "present",
+          "severity": "required"
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    },
+    "EDR SysOps": {
+      "event_type": "edr_sysops",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "agent.service_name",
+          "operator": "present",
+          "severity": "required"
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    },
+    "WMI Activity": {
+      "event_type": "wmi",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.wmi.name",
+          "cloud_field": "wmi.object_name"
+        },
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "wmi.object_name",
+          "operator": "equals",
+          "expected_from_local": "data.wmi.name",
+          "severity": "required"
+        },
+        {
+          "field": "wmi.namespace",
+          "operator": "equals",
+          "expected_from_local": "data.wmi.namespace",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "BITS JOBS Activity": {
+      "event_type": "bits",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "data.bits.job_name",
+          "cloud_field": "bits.display_name"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "bits.display_name",
+          "operator": "equals",
+          "expected_from_local": "data.bits.job_name",
+          "severity": "required"
+        },
+        {
+          "field": "process.pid",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "PowerShell Activity": {
+      "event_type": "powershell",
+      "time_before_seconds": 60,
+      "time_after_seconds": 300,
+      "max_time_difference_ms": 15000,
+      "keys": [
+        {
+          "local_field": "nonce",
+          "cloud_field": "powershell.content",
+          "operator": "contains"
+        },
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "powershell.content",
+          "operator": "contains",
+          "expected": "${nonce}",
+          "severity": "required"
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    }
+  },
+  "overrides": {
+    "win.process.terminate": {
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "data.process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ]
+    },
+    "win.process.access": {
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "data.process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "source_process.pid",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.process.image_load": {
+      "keys": [
+        {
+          "local_field": "data.process.pid",
+          "cloud_field": "process.pid"
+        },
+        {
+          "local_field": "data.image.path",
+          "cloud_field": "file.path",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.image.path",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "process.executable",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.process.remote_thread": {
+      "event_actions": [
+        "remote_thread_create"
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "thread.id",
+          "operator": "present",
+          "severity": "recommended"
+        },
+        {
+          "field": "thread.start_address",
+          "operator": "present",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.process.tampering": {
+      "event_actions": [
+        "tamper"
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "data.process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ]
+    },
+    "win.file.rename": {
+      "keys": [
+        {
+          "local_field": "data.file.old_path",
+          "cloud_field": "file.old_path",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "local_field": "data.file.path",
+          "cloud_field": "file.path",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "file.old_path",
+          "operator": "equals",
+          "expected_from_local": "data.file.old_path",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.file.path",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        }
+      ]
+    },
+    "win.network.url_access": {
+      "keys": [
+        {
+          "local_field": "process.pid",
+          "cloud_field": "process.pid"
+        },
+        {
+          "local_field": "data.network.destination_port",
+          "cloud_field": "network.destination_port"
+        }
+      ],
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "network.transport",
+          "operator": "equals",
+          "expected": "tcp",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "url.full",
+          "operator": "equals",
+          "expected_from_local": "data.network.url",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.network.file_download": {
+      "method_selection": "all",
+      "expectations": [
+        {
+          "id": "download-connection-stage",
+          "method": {
+            "id": "connection",
+            "title": "网络连接"
+          },
+          "event_type": "network",
+          "event_actions": [
+            "tcp_connect"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 10
+          },
+          "correlation": {
+            "max_time_difference_ms": 1000,
+            "keys": [
+              {
+                "local_field": "process.pid",
+                "cloud_field": "process.pid"
+              }
+            ]
+          },
+          "assertions": [
+            {
+              "field": "process.pid",
+              "operator": "equals",
+              "expected_from_local": "process.pid",
+              "severity": "required"
+            },
+            {
+              "field": "network.transport",
+              "operator": "equals",
+              "expected": "tcp",
+              "severity": "required",
+              "normalizers": [
+                "lowercase"
+              ]
+            },
+            {
+              "field": "network.source_ip",
+              "operator": "present",
+              "severity": "recommended"
+            }
+          ]
+        },
+        {
+          "id": "download-file-write-stage",
+          "method": {
+            "id": "file_write",
+            "title": "文件写入"
+          },
+          "event_type": "file",
+          "event_actions": [
+            "create",
+            "modify"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 10
+          },
+          "correlation": {
+            "max_time_difference_ms": 2000,
+            "keys": [
+              {
+                "local_field": "data.file.name",
+                "cloud_field": "file.name",
+                "normalizers": [
+                  "lowercase"
+                ]
+              }
+            ]
+          },
+          "assertions": [
+            {
+              "field": "file.name",
+              "operator": "equals",
+              "expected_from_local": "data.file.name",
+              "severity": "required",
+              "normalizers": [
+                "lowercase"
+              ]
+            },
+            {
+              "field": "file.path",
+              "operator": "equals",
+              "expected_from_local": "data.file.path",
+              "severity": "recommended",
+              "normalizers": [
+                "windows_path"
+              ]
+            },
+            {
+              "field": "file.size",
+              "operator": "equals",
+              "expected_from_local": "data.file.size",
+              "severity": "required"
+            },
+            {
+              "field": "file.hash.sha256",
+              "operator": "equals",
+              "expected_from_local": "data.file.hash_sha256",
+              "severity": "recommended",
+              "normalizers": [
+                "lowercase"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "win.hash.md5": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.md5",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.sha": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.sha256",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.hash.sha1",
+          "operator": "equals",
+          "expected_from_local": "data.hash.sha1",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.imphash": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.imphash",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.format",
+          "operator": "contains",
+          "expected": "PE",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.registry.create": {
+      "event_actions": [
+        "create",
+        "set_value"
+      ]
+    },
+    "win.registry.modify": {
+      "event_actions": [
+        "set_value"
+      ]
+    },
+    "win.registry.delete": {
+      "event_actions": [
+        "delete"
+      ],
+      "assertions": [
+        {
+          "field": "registry.key",
+          "operator": "equals",
+          "expected_from_local": "data.registry.key",
+          "severity": "required",
+          "normalizers": [
+            "registry_hive_path"
+          ]
+        },
+        {
+          "field": "registry.value_name",
+          "operator": "equals",
+          "expected_from_local": "data.registry.value_name",
+          "severity": "recommended"
+        }
+      ]
+    },
+    "win.service.create": {
+      "method_selection": "best",
+      "expectations": [
+        {
+          "id": "service-create-api-hook",
+          "method": {
+            "id": "scm_api_hook",
+            "title": "SCM CreateService API Hook"
+          },
+          "event_type": "service_api",
+          "event_actions": [
+            "create"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 3
+          },
+          "keys": [
+            {
+              "local_field": "data.service.name",
+              "cloud_field": "service.name",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            }
+          ],
+          "assertions": [
+            {
+              "field": "service.name",
+              "operator": "equals",
+              "expected_from_local": "data.service.name",
+              "severity": "required",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            },
+            {
+              "field": "service.binary_path",
+              "operator": "present",
+              "severity": "required"
+            },
+            {
+              "field": "process.pid",
+              "operator": "equals",
+              "expected_from_local": "process.pid",
+              "severity": "required"
+            }
+          ]
+        },
+        {
+          "id": "service-create-system-7045",
+          "method": {
+            "id": "system_event_7045",
+            "title": "Windows System 7045"
+          },
+          "event_type": "service",
+          "event_actions": [
+            "create"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 3
+          },
+          "keys": [
+            {
+              "local_field": "data.service.name",
+              "cloud_field": "service.name",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            }
+          ],
+          "assertions": [
+            {
+              "field": "service.name",
+              "operator": "equals",
+              "expected_from_local": "data.service.name",
+              "severity": "required",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            },
+            {
+              "field": "winlog.event_id",
+              "operator": "equals",
+              "expected": 7045,
+              "severity": "required"
+            },
+            {
+              "field": "service.binary_path",
+              "operator": "present",
+              "severity": "required"
+            }
+          ]
+        }
+      ]
+    },
+    "win.service.modify": {
+      "method_selection": "best",
+      "expectations": [
+        {
+          "id": "service-modify-api-hook",
+          "method": {
+            "id": "scm_api_hook",
+            "title": "SCM ChangeServiceConfig API Hook"
+          },
+          "event_type": "service_api",
+          "event_actions": [
+            "modify"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 3
+          },
+          "keys": [
+            {
+              "local_field": "data.service.name",
+              "cloud_field": "service.name",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            }
+          ],
+          "assertions": [
+            {
+              "field": "service.name",
+              "operator": "equals",
+              "expected_from_local": "data.service.name",
+              "severity": "required",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            },
+            {
+              "field": "service.start_type",
+              "operator": "present",
+              "severity": "recommended"
+            }
+          ]
+        },
+        {
+          "id": "service-modify-system-7040",
+          "method": {
+            "id": "system_event_7040",
+            "title": "Windows System 7040"
+          },
+          "event_type": "service",
+          "event_actions": [
+            "modify"
+          ],
+          "cardinality": {
+            "min": 1,
+            "max": 3
+          },
+          "keys": [
+            {
+              "local_field": "data.service.name",
+              "cloud_field": "service.name",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            }
+          ],
+          "assertions": [
+            {
+              "field": "service.name",
+              "operator": "equals",
+              "expected_from_local": "data.service.name",
+              "severity": "required",
+              "normalizers": [
+                "lowercase",
+                "trim"
+              ]
+            },
+            {
+              "field": "winlog.event_id",
+              "operator": "equals",
+              "expected": 7040,
+              "severity": "required"
+            }
+          ]
+        }
+      ]
+    },
+    "win.service.delete": {
+      "event_type": "service_api",
+      "event_actions": [
+        "delete"
+      ],
+      "assertions": [
+        {
+          "field": "service.name",
+          "operator": "equals",
+          "expected_from_local": "data.service.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase",
+            "trim"
+          ]
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    },
+    "win.scheduled_task.create": {
+      "event_actions": [
+        "register",
+        "create"
+      ]
+    },
+    "win.scheduled_task.modify": {
+      "event_actions": [
+        "register",
+        "modify"
+      ]
+    },
+    "win.group_policy.modify": {
+      "event_type": "registry",
+      "event_actions": [
+        "set_value",
+        "modify"
+      ]
+    },
+    "win.wmi.consumer_filter_binding": {
+      "event_actions": [
+        "consumer_filter_bind"
+      ]
+    },
+    "win.wmi.event_consumer": {
+      "event_actions": [
+        "consumer"
+      ]
+    },
+    "win.wmi.event_filter": {
+      "event_actions": [
+        "filter"
+      ]
+    },
+    "win.device.virtual_disk_mount": {
+      "assertions": [
+        {
+          "field": "device.type",
+          "operator": "equals",
+          "expected": "virtual_disk",
+          "severity": "required"
+        },
+        {
+          "field": "device.drive_letter",
+          "operator": "equals",
+          "expected_from_local": "data.device.device_id",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "process.pid",
+          "severity": "required"
+        }
+      ]
+    },
+    "win.hash.md5.txt": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.md5",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.sha.txt": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.sha256",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.hash.sha1",
+          "operator": "equals",
+          "expected_from_local": "data.hash.sha1",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.md5.json": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.md5",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.sha.json": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.sha256",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.hash.sha1",
+          "operator": "equals",
+          "expected_from_local": "data.hash.sha1",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.md5.dll": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.md5",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.hash.sha.dll": {
+      "event_type": "file",
+      "event_actions": [
+        "create"
+      ],
+      "assertions": [
+        {
+          "field": "file.name",
+          "operator": "equals",
+          "expected_from_local": "data.hash.name",
+          "severity": "required",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.path",
+          "operator": "equals",
+          "expected_from_local": "data.hash.path",
+          "severity": "recommended",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "file.hash.sha256",
+          "operator": "equals",
+          "expected_from_local": "data.hash.value",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        },
+        {
+          "field": "file.hash.sha1",
+          "operator": "equals",
+          "expected_from_local": "data.hash.sha1",
+          "severity": "recommended",
+          "normalizers": [
+            "lowercase"
+          ]
+        }
+      ]
+    },
+    "win.process.create": {
+      "assertions": [
+        {
+          "field": "process.pid",
+          "operator": "equals",
+          "expected_from_local": "data.process.pid",
+          "severity": "required"
+        },
+        {
+          "field": "process.name",
+          "operator": "equals",
+          "expected_from_local": "data.process.name",
+          "severity": "required"
+        },
+        {
+          "field": "process.executable",
+          "operator": "equals",
+          "expected_from_local": "data.process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "process.command_line",
+          "operator": "contains",
+          "expected": "${nonce}",
+          "severity": "required"
+        },
+        {
+          "field": "parent_process.name",
+          "operator": "equals",
+          "expected_from_local": "process.name",
+          "severity": "required"
+        },
+        {
+          "field": "parent_process.executable",
+          "operator": "equals",
+          "expected_from_local": "process.executable",
+          "severity": "required",
+          "normalizers": [
+            "windows_path"
+          ]
+        },
+        {
+          "field": "process.start",
+          "operator": "equals",
+          "expected_from_local": "data.process.start_time",
+          "severity": "recommended",
+          "normalizers": [
+            "timestamp_utc"
+          ]
+        },
+        {
+          "field": "parent_process.start",
+          "operator": "equals",
+          "expected_from_local": "process.start_time",
+          "severity": "recommended",
+          "normalizers": [
+            "timestamp_utc"
+          ]
+        }
+      ]
+    }
+  }
+}

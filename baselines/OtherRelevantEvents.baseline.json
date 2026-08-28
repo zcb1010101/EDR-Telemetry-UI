@@ -1,0 +1,109 @@
+﻿{
+    "schema_version":  "2.0",
+    "baseline_id":  "Other Relevant Events",
+    "title":  "Other Relevant Events 遥测基线",
+    "baselines":  [
+                      {
+                          "schema_version":  "2.0",
+                          "baseline_id":  "win.group_policy.modify",
+                          "version":  "2.0.0",
+                          "title":  "GroupPolicyModification 遥测基线",
+                          "description":  "验证 group_policy.modify 本地行为成立，并按确定性字段键关联云端事件。",
+                          "platform":  {
+                                           "os":  "windows",
+                                           "versions":  [
+                                                            "windows-10",
+                                                            "windows-11",
+                                                            "windows-server-2019",
+                                                            "windows-server-2022"
+                                                        ],
+                                           "architectures":  [
+                                                                 "x64"
+                                                             ]
+                                       },
+                          "risk_level":  "LV2",
+                          "capability":  {
+                                             "id":  "win.group_policy.modify",
+                                             "version":  "2.0.0"
+                                         },
+                          "local_requirements":  [
+                                                     {
+                                                         "field":  "operation",
+                                                         "operator":  "equals",
+                                                         "expected":  "group_policy.modify",
+                                                         "severity":  "required"
+                                                     },
+                                                     {
+                                                         "field":  "status",
+                                                         "operator":  "equals",
+                                                         "expected":  "SUCCESS",
+                                                         "severity":  "required"
+                                                     }
+                                                 ],
+                          "correlation":  {
+                                              "time_before_seconds":  60,
+                                              "time_after_seconds":  300,
+                                              "max_time_difference_ms":  15000,
+                                              "keys":  {
+                                                           "local_field":  "data.policy.key",
+                                                           "cloud_field":  "registry.key",
+                                                           "operator":  "equals",
+                                                           "normalizers":  [
+                                                                               "registry_hive_path"
+                                                                           ]
+                                                       }
+                                          },
+                          "method_selection":  {
+                                                   "strategy":  "best"
+                                               },
+                          "cloud_expectations":  [
+                                                     {
+                                                         "id":  "win.group_policy.modify-event",
+                                                         "event_type":  "registry",
+                                                         "event_actions":  [
+                                                                               "set_value",
+                                                                               "modify"
+                                                                           ],
+                                                         "cardinality":  {
+                                                                             "min":  1,
+                                                                             "max":  3
+                                                                         },
+                                                         "assertions":  [
+                                                                            {
+                                                                                "field":  "registry.key",
+                                                                                "operator":  "equals",
+                                                                                "expected":  null,
+                                                                                "expected_from_local":  "data.policy.key",
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+                                                                                                    "registry_hive_path"
+                                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "field":  "registry.value_data",
+                                                                                "operator":  "contains",
+                                                                                "expected":  "${nonce}",
+                                                                                "expected_from_local":  null,
+                                                                                "accepted_values":  null,
+                                                                                "severity":  "required",
+                                                                                "normalizers":  [
+
+                                                                                                ]
+                                                                            }
+                                                                        ]
+                                                     }
+                                                 ],
+                          "scoring":  {
+                                          "weight":  1,
+                                          "required_field_weight":  1,
+                                          "recommended_field_weight":  0.25
+                                      },
+                          "metadata":  {
+                                           "owner":  "edr-validation-team",
+                                           "status":  "active",
+                                           "change_reason":  "采用确定性关联键，移除锚点评分。"
+                                       }
+                      }
+                  ]
+}

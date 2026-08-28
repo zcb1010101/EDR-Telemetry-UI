@@ -1,0 +1,6324 @@
+﻿{
+  "schema_version": "2.0",
+  "default_vendor": "tencent",
+  "vendors": {
+    "tencent": {
+      "name": "Tencent EDR",
+      "profile_id": "tencent-edr-proc-events-v1",
+      "vendor": "Tencent",
+      "product": "Tencent EDR",
+      "description": "将控制台导出的 Windows 进程、注入、模块、文件、账号、注册表、服务、计划任务、网络、WMI、命名管道与 PowerShell 事件映射为平台 Canonical Event。",
+      "input": {
+        "containers": [
+          "json-array",
+          "jsonl"
+        ],
+        "encoding": "utf-8",
+        "record_selector": {
+          "all": {
+            "OS": "Windows"
+          }
+        },
+        "event_id_field": "Common.EventUUId",
+        "host_id_field": "Common.Mid",
+        "host_name_field": "Environment.HostName",
+        "event_time": {
+          "field": "Common.EventTime",
+          "format": "unix_ms"
+        }
+      },
+      "routes": [
+        {
+          "route_id": "driver-load-kernelmon",
+          "when": {
+            "@table": "ModuleEvents",
+            "Action.Type": "Module",
+            "Action.Name": "LoadDriver"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "driver"
+            },
+            "event.action": {
+              "constant": "load"
+            },
+            "event.category": {
+              "constant": "module"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "source_process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": 0
+            },
+            "source_process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "source_process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "source_process.executable": {
+              "source": "Parent.FilePath",
+              "on_empty": null
+            },
+            "source_process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "driver.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "driver.image_path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "driver.base_address": {
+              "source": "Child.ModuleBase",
+              "transform": [
+                "signed_int64_to_hex"
+              ],
+              "on_empty": null
+            },
+            "driver.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "driver.module_size": {
+              "source": "Child.ModuleSize",
+              "on_zero": 0
+            },
+            "driver.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "driver.signer": {
+              "source": "Child.FileSign",
+              "on_empty": null
+            },
+            "driver.signature_status": {
+              "source": "Child.FileSignStatus",
+              "on_empty": null
+            },
+            "driver.signature_type": {
+              "source": "Child.FileSignWhite",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "file.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "driver-modify-direct-planned",
+          "when": {
+            "@table": [
+              "DriverEvents",
+              "ModuleEvents"
+            ],
+            "Action.Type": [
+              "Driver",
+              "Module"
+            ],
+            "Action.Name": [
+              "DriverModify",
+              "ModifyDriver"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "driver"
+            },
+            "event.action": {
+              "constant": "modify"
+            },
+            "event.category": {
+              "constant": "module"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "driver.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "driver.image_path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "driver.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "driver.module_size": {
+              "source": "Child.ModuleSize",
+              "on_zero": 0
+            },
+            "driver.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "driver.hash.sha256": {
+              "source": "Child.FileSha256",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "driver-unload-direct-planned",
+          "when": {
+            "@table": [
+              "DriverEvents",
+              "ModuleEvents"
+            ],
+            "Action.Type": [
+              "Driver",
+              "Module"
+            ],
+            "Action.Name": [
+              "DriverUnload",
+              "UnloadDriver"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "driver"
+            },
+            "event.action": {
+              "constant": "unload"
+            },
+            "event.category": {
+              "constant": "module"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "driver.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "driver.image_path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "driver.base_address": {
+              "source": "Child.ModuleBase",
+              "transform": [
+                "signed_int64_to_hex"
+              ],
+              "on_empty": null
+            },
+            "driver.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "driver.module_size": {
+              "source": "Child.ModuleSize",
+              "on_zero": 0
+            },
+            "driver.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "virtual-disk-mount-planned-telemetry",
+          "when": {
+            "@table": [
+              "DeviceEvents",
+              "VirtualDiskEvents",
+              "VDiskEvents"
+            ],
+            "Action.Name": [
+              "VirtualDiskMount",
+              "VDiskMount"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "device"
+            },
+            "event.action": {
+              "constant": "virtual_disk_mount"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "device.type": {
+              "constant": "virtual_disk"
+            },
+            "device.instance_id": {
+              "sources": [
+                "Child.VirtualDiskInstanceId",
+                "Child.DeviceInstanceId",
+                "Child.InstanceId"
+              ],
+              "on_empty": null
+            },
+            "device.image_path": {
+              "sources": [
+                "Child.VirtualDiskImagePath",
+                "Child.DiskImagePath",
+                "Child.ImagePath",
+                "Child.FilePath"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "device.physical_path": {
+              "sources": [
+                "Child.VirtualDiskPhysicalPath",
+                "Child.PhysicalDiskPath",
+                "Child.PhysicalPath"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "device.image_sha256": {
+              "sources": [
+                "Child.VirtualDiskImageSha256",
+                "Child.ImageSha256",
+                "Child.FileSha256"
+              ],
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "device.virtual_size_bytes": {
+              "sources": [
+                "Child.VirtualDiskSize",
+                "Child.VirtualSizeBytes",
+                "Child.DiskSize"
+              ],
+              "on_zero": 0
+            },
+            "device.read_only": {
+              "sources": [
+                "Child.VirtualDiskReadOnly",
+                "Child.ReadOnly"
+              ],
+              "on_empty": null
+            },
+            "device.no_drive_letter": {
+              "sources": [
+                "Child.VirtualDiskNoDriveLetter",
+                "Child.NoDriveLetter"
+              ],
+              "on_empty": null
+            },
+            "device.drive_letter": {
+              "sources": [
+                "Child.VirtualDiskDriveLetter",
+                "Child.DriveLetter"
+              ],
+              "on_empty": null
+            },
+            "device.mount_point": {
+              "sources": [
+                "Child.VirtualDiskMountPoint",
+                "Child.MountPoint"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "device.method": {
+              "sources": [
+                "Child.VirtualDiskMethod",
+                "Child.AttachMethod",
+                "Child.Method"
+              ],
+              "on_empty": null
+            },
+            "device.provider": {
+              "sources": [
+                "Child.VirtualDiskProvider",
+                "Child.Provider"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "usb-device-mount-planned-telemetry",
+          "when": {
+            "@table": [
+              "DeviceEvents",
+              "UsbDeviceEvents",
+              "PnpDeviceEvents"
+            ],
+            "Action.Name": [
+              "UsbDeviceMount",
+              "UsbDeviceConnected",
+              "PnpDeviceConnected"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "device"
+            },
+            "event.action": {
+              "constant": "usb_mount"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "device.type": {
+              "constant": "usb"
+            },
+            "device.instance_id": {
+              "sources": [
+                "Child.DeviceInstanceId",
+                "Child.InstanceId",
+                "Child.PnpInstanceId"
+              ]
+            },
+            "device.class_guid": {
+              "sources": [
+                "Child.DeviceClassGuid",
+                "Child.ClassGuid"
+              ],
+              "on_empty": null
+            },
+            "device.vendor_id": {
+              "sources": [
+                "Child.UsbVendorId",
+                "Child.VendorId",
+                "Child.Vid"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.product_id": {
+              "sources": [
+                "Child.UsbProductId",
+                "Child.ProductId",
+                "Child.Pid"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.serial_number": {
+              "sources": [
+                "Child.UsbSerialNumber",
+                "Child.SerialNumber",
+                "Child.DeviceSerial"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.description": {
+              "sources": [
+                "Child.DeviceDescription",
+                "Child.Description"
+              ],
+              "on_empty": null
+            },
+            "device.manufacturer": {
+              "sources": [
+                "Child.DeviceManufacturer",
+                "Child.Manufacturer"
+              ],
+              "on_empty": null
+            },
+            "device.service": {
+              "sources": [
+                "Child.DeviceService",
+                "Child.Service"
+              ],
+              "on_empty": null
+            },
+            "device.driver_key": {
+              "sources": [
+                "Child.DeviceDriverKey",
+                "Child.DriverKey"
+              ],
+              "on_empty": null
+            },
+            "device.volume_guid": {
+              "sources": [
+                "Child.VolumeGuid",
+                "Child.DeviceVolumeGuid"
+              ],
+              "on_empty": null
+            },
+            "device.drive_letter": {
+              "sources": [
+                "Child.DriveLetter",
+                "Child.DeviceDriveLetter"
+              ],
+              "on_empty": null
+            },
+            "device.mount_point": {
+              "sources": [
+                "Child.MountPoint",
+                "Child.DeviceMountPoint"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "device.method": {
+              "constant": "USB_UDE_PNP"
+            }
+          }
+        },
+        {
+          "route_id": "usb-device-unmount-planned-telemetry",
+          "when": {
+            "@table": [
+              "DeviceEvents",
+              "UsbDeviceEvents",
+              "PnpDeviceEvents"
+            ],
+            "Action.Name": [
+              "UsbDeviceUnmount",
+              "UsbDeviceDisconnected",
+              "PnpDeviceDisconnected"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "device"
+            },
+            "event.action": {
+              "constant": "usb_unmount"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "device.type": {
+              "constant": "usb"
+            },
+            "device.instance_id": {
+              "sources": [
+                "Child.DeviceInstanceId",
+                "Child.InstanceId",
+                "Child.PnpInstanceId"
+              ]
+            },
+            "device.class_guid": {
+              "sources": [
+                "Child.DeviceClassGuid",
+                "Child.ClassGuid"
+              ],
+              "on_empty": null
+            },
+            "device.vendor_id": {
+              "sources": [
+                "Child.UsbVendorId",
+                "Child.VendorId",
+                "Child.Vid"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.product_id": {
+              "sources": [
+                "Child.UsbProductId",
+                "Child.ProductId",
+                "Child.Pid"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.serial_number": {
+              "sources": [
+                "Child.UsbSerialNumber",
+                "Child.SerialNumber",
+                "Child.DeviceSerial"
+              ],
+              "transform": [
+                "lowercase",
+                "trim"
+              ],
+              "on_empty": null
+            },
+            "device.description": {
+              "sources": [
+                "Child.DeviceDescription",
+                "Child.Description"
+              ],
+              "on_empty": null
+            },
+            "device.manufacturer": {
+              "sources": [
+                "Child.DeviceManufacturer",
+                "Child.Manufacturer"
+              ],
+              "on_empty": null
+            },
+            "device.service": {
+              "sources": [
+                "Child.DeviceService",
+                "Child.Service"
+              ],
+              "on_empty": null
+            },
+            "device.driver_key": {
+              "sources": [
+                "Child.DeviceDriverKey",
+                "Child.DriverKey"
+              ],
+              "on_empty": null
+            },
+            "device.volume_guid": {
+              "sources": [
+                "Child.VolumeGuid",
+                "Child.DeviceVolumeGuid"
+              ],
+              "on_empty": null
+            },
+            "device.drive_letter": {
+              "sources": [
+                "Child.DriveLetter",
+                "Child.DeviceDriveLetter"
+              ],
+              "on_empty": null
+            },
+            "device.mount_point": {
+              "sources": [
+                "Child.MountPoint",
+                "Child.DeviceMountPoint"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "device.method": {
+              "constant": "USB_UDE_PNP"
+            }
+          }
+        },
+        {
+          "route_id": "powershell-script-candidate-discovery",
+          "when": {
+            "@table": "ScriptEvents",
+            "Action.Type": "Script"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "powershell"
+            },
+            "event.action": {
+              "constant": "script_block"
+            },
+            "event.category": {
+              "constant": "script"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "powershell.content": {
+              "source": "Child.ContentData",
+              "on_empty": null
+            },
+            "powershell.content_name": {
+              "source": "Child.ContentName",
+              "on_empty": null
+            },
+            "powershell.content_type": {
+              "source": "Child.Type",
+              "on_empty": null
+            },
+            "powershell.hook_module": {
+              "source": "Child.HookModule",
+              "on_empty": null
+            },
+            "powershell.app_version": {
+              "source": "Child.AppVersion",
+              "on_empty": null
+            },
+            "powershell.monitor_name": {
+              "source": "Common.MonitorName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "file.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "wmi-event-filter-planned-telemetry",
+          "when": {
+            "@table": [
+              "WMIEvents",
+              "WmiEvents",
+              "WmiSubscriptionEvents"
+            ],
+            "Action.Name": "WmiEventFilter"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "wmi"
+            },
+            "event.action": {
+              "constant": "filter"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "wmi.namespace": {
+              "sources": [
+                "Child.WmiNamespace",
+                "Child.Namespace",
+                "Child.NameSpace"
+              ],
+              "on_empty": null
+            },
+            "wmi.operation": {
+              "constant": "filter"
+            },
+            "wmi.object_class": {
+              "sources": [
+                "Child.WmiObjectClass",
+                "Child.ObjectClass",
+                "Child.ClassName"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_name": {
+              "sources": [
+                "Child.WmiObjectName",
+                "Child.ObjectName",
+                "Child.Name"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_path": {
+              "sources": [
+                "Child.WmiObjectPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.filter_name": {
+              "sources": [
+                "Child.WmiFilterName",
+                "Child.FilterName",
+                "Child.ObjectName"
+              ],
+              "on_empty": null
+            },
+            "wmi.filter_path": {
+              "sources": [
+                "Child.WmiFilterPath",
+                "Child.FilterPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.query": {
+              "sources": [
+                "Child.WmiQuery",
+                "Child.Query"
+              ],
+              "on_empty": null
+            },
+            "wmi.query_language": {
+              "sources": [
+                "Child.WmiQueryLanguage",
+                "Child.QueryLanguage"
+              ],
+              "on_empty": null
+            },
+            "wmi.event_namespace": {
+              "sources": [
+                "Child.WmiEventNamespace",
+                "Child.EventNamespace"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "wmi-event-consumer-planned-telemetry",
+          "when": {
+            "@table": [
+              "WMIEvents",
+              "WmiEvents",
+              "WmiSubscriptionEvents"
+            ],
+            "Action.Name": "WmiEventConsumer"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "wmi"
+            },
+            "event.action": {
+              "constant": "consumer"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "wmi.namespace": {
+              "sources": [
+                "Child.WmiNamespace",
+                "Child.Namespace",
+                "Child.NameSpace"
+              ],
+              "on_empty": null
+            },
+            "wmi.operation": {
+              "constant": "consumer"
+            },
+            "wmi.object_class": {
+              "sources": [
+                "Child.WmiObjectClass",
+                "Child.ObjectClass",
+                "Child.ClassName"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_name": {
+              "sources": [
+                "Child.WmiObjectName",
+                "Child.ObjectName",
+                "Child.Name"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_path": {
+              "sources": [
+                "Child.WmiObjectPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_name": {
+              "sources": [
+                "Child.WmiConsumerName",
+                "Child.ConsumerName",
+                "Child.ObjectName"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_path": {
+              "sources": [
+                "Child.WmiConsumerPath",
+                "Child.ConsumerPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_class": {
+              "sources": [
+                "Child.WmiConsumerClass",
+                "Child.ConsumerClass",
+                "Child.ObjectClass"
+              ],
+              "on_empty": null
+            },
+            "wmi.log_file_path": {
+              "sources": [
+                "Child.WmiLogFilePath",
+                "Child.LogFilePath",
+                "Child.FileName"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "wmi.text_template": {
+              "sources": [
+                "Child.WmiTextTemplate",
+                "Child.TextTemplate",
+                "Child.Text"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "wmi-consumer-filter-binding-planned-telemetry",
+          "when": {
+            "@table": [
+              "WMIEvents",
+              "WmiEvents",
+              "WmiSubscriptionEvents"
+            ],
+            "Action.Name": "WmiEventConsumerToFilter"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "wmi"
+            },
+            "event.action": {
+              "constant": "consumer_filter_bind"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "wmi.namespace": {
+              "sources": [
+                "Child.WmiNamespace",
+                "Child.Namespace",
+                "Child.NameSpace"
+              ],
+              "on_empty": null
+            },
+            "wmi.operation": {
+              "constant": "consumer_filter_bind"
+            },
+            "wmi.object_class": {
+              "sources": [
+                "Child.WmiObjectClass",
+                "Child.ObjectClass",
+                "Child.ClassName"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_name": {
+              "sources": [
+                "Child.WmiObjectName",
+                "Child.ObjectName",
+                "Child.Name"
+              ],
+              "on_empty": null
+            },
+            "wmi.object_path": {
+              "sources": [
+                "Child.WmiObjectPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.filter_name": {
+              "sources": [
+                "Child.WmiFilterName",
+                "Child.FilterName"
+              ],
+              "on_empty": null
+            },
+            "wmi.filter_path": {
+              "sources": [
+                "Child.WmiFilterPath",
+                "Child.FilterPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_name": {
+              "sources": [
+                "Child.WmiConsumerName",
+                "Child.ConsumerName"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_path": {
+              "sources": [
+                "Child.WmiConsumerPath",
+                "Child.ConsumerPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_class": {
+              "sources": [
+                "Child.WmiConsumerClass",
+                "Child.ConsumerClass"
+              ],
+              "on_empty": null
+            },
+            "wmi.binding_path": {
+              "sources": [
+                "Child.WmiBindingPath",
+                "Child.BindingPath",
+                "Child.ObjectPath"
+              ],
+              "on_empty": null
+            },
+            "wmi.filter_reference": {
+              "sources": [
+                "Child.WmiFilterReference",
+                "Child.FilterReference",
+                "Child.Filter"
+              ],
+              "on_empty": null
+            },
+            "wmi.consumer_reference": {
+              "sources": [
+                "Child.WmiConsumerReference",
+                "Child.ConsumerReference",
+                "Child.Consumer"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "bits-job-planned-telemetry",
+          "when": {
+            "@table": [
+              "BitsEvents",
+              "BITSEvents",
+              "BackgroundTransferEvents"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "bits"
+            },
+            "event.action": {
+              "constant": "job"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion",
+              "on_empty": null
+            },
+            "host.agent_id": {
+              "source": "Common.Guid",
+              "on_empty": null
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "bits.job_id": {
+              "sources": [
+                "Child.BitsJobId",
+                "Child.JobId"
+              ],
+              "on_empty": null
+            },
+            "bits.display_name": {
+              "sources": [
+                "Child.BitsJobName",
+                "Child.JobName",
+                "Child.DisplayName"
+              ],
+              "on_empty": null
+            },
+            "bits.job_type": {
+              "sources": [
+                "Child.BitsJobType",
+                "Child.JobType"
+              ],
+              "on_empty": null
+            },
+            "bits.state": {
+              "sources": [
+                "Child.BitsJobState",
+                "Child.JobState",
+                "Child.State"
+              ],
+              "on_empty": null
+            },
+            "bits.owner_sid": {
+              "sources": [
+                "Child.BitsOwnerSid",
+                "Child.OwnerSid",
+                "Child.SubjectUserSid"
+              ],
+              "on_empty": null
+            },
+            "bits.remote_url": {
+              "sources": [
+                "Child.BitsRemoteUrl",
+                "Child.RemoteUrl",
+                "Child.SourceUrl"
+              ],
+              "on_empty": null
+            },
+            "bits.local_path": {
+              "sources": [
+                "Child.BitsLocalPath",
+                "Child.LocalPath",
+                "Child.FilePath"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "bits.bytes_total": {
+              "sources": [
+                "Child.BitsBytesTotal",
+                "Child.BytesTotal"
+              ],
+              "on_zero": 0
+            },
+            "bits.bytes_transferred": {
+              "sources": [
+                "Child.BitsBytesTransferred",
+                "Child.BytesTransferred"
+              ],
+              "on_zero": 0
+            },
+            "bits.notification_command": {
+              "sources": [
+                "Child.BitsNotificationCommand",
+                "Child.NotificationCommand"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "named-pipe-create",
+          "when": {
+            "@table": "FileEvents",
+            "Action.Type": "File",
+            "Action.Name": "NamedPipe",
+            "Child.PipeOpName": "创建管道"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "named_pipe"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "ipc"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "named_pipe.name": {
+              "source": "Child.PipeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.node_name": {
+              "source": "Child.NodeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.operation_name": {
+              "source": "Child.PipeOpName"
+            },
+            "named_pipe.type": {
+              "source": "Child.Type",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "named-pipe-connect",
+          "when": {
+            "@table": "FileEvents",
+            "Action.Type": "File",
+            "Action.Name": "NamedPipe",
+            "Child.PipeOpName": "打开管道"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "named_pipe"
+            },
+            "event.action": {
+              "constant": "connect"
+            },
+            "event.category": {
+              "constant": "ipc"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "named_pipe.name": {
+              "source": "Child.PipeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.node_name": {
+              "source": "Child.NodeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.operation_name": {
+              "source": "Child.PipeOpName"
+            },
+            "named_pipe.type": {
+              "source": "Child.Type",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "named-pipe-candidate-discovery",
+          "when": {
+            "@table": "FileEvents",
+            "Action.Name": "NamedPipe"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "named_pipe"
+            },
+            "event.action": {
+              "source": "Child.PipeOpName",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "constant": "ipc"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "named_pipe.name": {
+              "source": "Child.PipeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.node_name": {
+              "source": "Child.NodeName",
+              "transform": [
+                "named_pipe_path"
+              ],
+              "on_empty": null
+            },
+            "named_pipe.operation_name": {
+              "source": "Child.PipeOpName",
+              "on_empty": null
+            },
+            "named_pipe.type": {
+              "source": "Child.Type",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "network-tcp-net-bind",
+          "when": {
+            "@table": "NetworkEvents",
+            "Action.Type": "Network",
+            "Action.Name": "NetBind",
+            "Child.Protocol": "tcp"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "tcp_connect"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "event.provider": {
+              "source": "Common.Source",
+              "on_empty": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "source": "Child.Protocol",
+              "transform": [
+                "lowercase"
+              ]
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.endpoint_name": {
+              "source": "Child.NodeName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "network-udp-net-bind",
+          "when": {
+            "@table": "NetworkEvents",
+            "Action.Type": "Network",
+            "Action.Name": "NetBind",
+            "Child.Protocol": "udp"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "udp_connect"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "event.provider": {
+              "source": "Common.Source",
+              "on_empty": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "source": "Child.Protocol",
+              "transform": [
+                "lowercase"
+              ]
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.endpoint_name": {
+              "source": "Child.NodeName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "network-dns-socket-request",
+          "when": {
+            "Action.Type": "Network",
+            "Action.Name": "SocketRequest",
+            "Child.Protocol": "udp",
+            "Child.DstPort": 53
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "dns_query"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "constant": "udp"
+            },
+            "network.direction": {
+              "source": "Child.Direct",
+              "transform": [
+                "network_direction"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.destination_ip": {
+              "source": "Child.DstIp"
+            },
+            "network.destination_port": {
+              "source": "Child.DstPort"
+            }
+          }
+        },
+        {
+          "route_id": "network-udp-socket-request",
+          "when": {
+            "Action.Type": "Network",
+            "Action.Name": "SocketRequest",
+            "Child.Protocol": "udp"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "udp_connect"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "constant": "udp"
+            },
+            "network.direction": {
+              "source": "Child.Direct",
+              "transform": [
+                "network_direction"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.destination_ip": {
+              "source": "Child.DstIp"
+            },
+            "network.destination_port": {
+              "source": "Child.DstPort"
+            }
+          }
+        },
+        {
+          "route_id": "network-tcp-socket-request",
+          "when": {
+            "Action.Type": "Network",
+            "Action.Name": "SocketRequest",
+            "Child.Protocol": "tcp"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "tcp_connect"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "constant": "tcp"
+            },
+            "network.direction": {
+              "source": "Child.Direct",
+              "transform": [
+                "network_direction"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.destination_ip": {
+              "source": "Child.DstIp"
+            },
+            "network.destination_port": {
+              "source": "Child.DstPort"
+            }
+          }
+        },
+        {
+          "route_id": "network-http-url-access",
+          "when": {
+            "Action.Type": "Network",
+            "Action.Name": "HttpRequest"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "constant": "url_access"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "network.transport": {
+              "constant": "tcp"
+            },
+            "network.direction": {
+              "source": "Child.Direct",
+              "transform": [
+                "network_direction"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp"
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort"
+            },
+            "network.destination_ip": {
+              "source": "Child.DstIp"
+            },
+            "network.destination_port": {
+              "source": "Child.DstPort"
+            },
+            "url.full": {
+              "source": "Child.Url"
+            },
+            "url.domain": {
+              "source": "Child.Host",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "http.request.method": {
+              "constant": "GET"
+            }
+          }
+        },
+        {
+          "route_id": "process-create",
+          "when": {
+            "Action.Type": "Proc",
+            "Action.Name": "ProcessCreate"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid"
+            },
+            "process.name": {
+              "source": "Child.FileName"
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Child.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "process.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "parent_process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "parent_process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "parent_process.name": {
+              "source": "Parent.FileName"
+            },
+            "parent_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "parent_process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "parent_process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "user.name": {
+              "source": "Child.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.ProcDomainName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "process-terminate",
+          "when": {
+            "@table": "ProcEvents",
+            "Action.Type": "Proc",
+            "Action.Name": [
+              "ProcessExit",
+              "ProcessTerminate",
+              "TerminateProcess"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "terminate"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Child.FileName"
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline"
+            },
+            "process.exit_code": {
+              "source": "Child.ExitCode",
+              "on_empty": null
+            },
+            "source_process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "source_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            }
+          }
+        },
+        {
+          "route_id": "process-access",
+          "when": {
+            "Action.Type": "InjectHook",
+            "Action.Name": "NtOpenProcess"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "access"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid"
+            },
+            "process.name": {
+              "source": "Child.FileName"
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline"
+            },
+            "source_process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "source_process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "source_process.name": {
+              "source": "Parent.FileName"
+            },
+            "source_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "source_process.command_line": {
+              "source": "Parent.ProcCmdline"
+            }
+          }
+        },
+        {
+          "route_id": "image-load",
+          "when": {
+            "Action.Type": "Module",
+            "Action.Name": "LoadDll"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "image_load"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "image.base_address": {
+              "source": "Child.ModuleBase"
+            },
+            "image.size_bytes": {
+              "source": "Child.ModuleSize"
+            }
+          }
+        },
+        {
+          "route_id": "remote-thread",
+          "when": {
+            "Action.Type": "Proc",
+            "Action.Name": "RemoteThread"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "remote_thread_create"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid"
+            },
+            "process.name": {
+              "source": "Child.FileName"
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline"
+            },
+            "source_process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "source_process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "source_process.name": {
+              "source": "Parent.FileName"
+            },
+            "source_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "source_process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "thread.id": {
+              "source": "Child.ThreadId"
+            },
+            "thread.start_address": {
+              "source": "Child.ThreadStartAddr"
+            }
+          }
+        },
+        {
+          "route_id": "process-tampering",
+          "when": {
+            "Action.Type": "InjectHook",
+            "Action.Name": "WriteProcessMemory"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "process"
+            },
+            "event.action": {
+              "constant": "tamper"
+            },
+            "event.category": {
+              "constant": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid"
+            },
+            "process.name": {
+              "source": "Child.FileName"
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline"
+            },
+            "source_process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "source_process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "source_process.name": {
+              "source": "Parent.FileName"
+            },
+            "source_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "source_process.command_line": {
+              "source": "Parent.ProcCmdline"
+            }
+          }
+        },
+        {
+          "route_id": "file-create",
+          "when": {
+            "Action.Type": "File",
+            "Action.Name": "FileWriteClose",
+            "Child.FileCreateOpName": "新建文件"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "file"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "file"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.size": {
+              "source": "Child.FileSize"
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.hash.sha256": {
+              "sources": [
+                "Child.FileSha",
+                "Child.FileSha256"
+              ],
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.hash.sha_type": {
+              "sources": [
+                "Child.FileShaType",
+                "Child.FileSha256Type"
+              ],
+              "on_empty": null
+            },
+            "file.hash.imphash": {
+              "sources": [
+                "Child.FileImpHash",
+                "Child.FileImphash",
+                "Child.ImpHash"
+              ],
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.operation_name": {
+              "constant": "create_new"
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            },
+            "file.io.read_bytes": {
+              "source": "Child.FileTotalRead",
+              "on_zero": 0
+            },
+            "file.io.write_bytes": {
+              "source": "Child.FileTotalWrite",
+              "on_zero": 0
+            }
+          }
+        },
+        {
+          "route_id": "file-open",
+          "when": {
+            "Action.Type": "File",
+            "Action.Name": "FileWriteClose",
+            "Child.FileCreateOpName": "打开文件"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "file"
+            },
+            "event.action": {
+              "constant": "open"
+            },
+            "event.category": {
+              "constant": "file"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.size": {
+              "source": "Child.FileSize"
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.operation_name": {
+              "constant": "open_existing"
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            },
+            "file.io.read_bytes": {
+              "source": "Child.FileTotalRead",
+              "on_zero": 0
+            },
+            "file.io.write_bytes": {
+              "source": "Child.FileTotalWrite",
+              "on_zero": 0
+            }
+          }
+        },
+        {
+          "route_id": "file-modify",
+          "when": {
+            "Action.Type": "File",
+            "Action.Name": "FileWriteClose",
+            "Child.FileCreateOpName": "覆盖写文件"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "file"
+            },
+            "event.action": {
+              "constant": "modify"
+            },
+            "event.category": {
+              "constant": "file"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.size": {
+              "source": "Child.FileSize"
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.operation_name": {
+              "constant": "overwrite_existing"
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            },
+            "file.io.read_bytes": {
+              "source": "Child.FileTotalRead",
+              "on_zero": 0
+            },
+            "file.io.write_bytes": {
+              "source": "Child.FileTotalWrite",
+              "on_zero": 0
+            }
+          }
+        },
+        {
+          "route_id": "file-delete",
+          "when": {
+            "Action.Type": "File",
+            "Action.Name": "FileDelete"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "file"
+            },
+            "event.action": {
+              "constant": "delete"
+            },
+            "event.category": {
+              "constant": "file"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.size": {
+              "source": "Child.FileSize"
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "file-rename",
+          "when": {
+            "Action.Type": "File",
+            "Action.Name": "MoveFileExW"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "file"
+            },
+            "event.action": {
+              "constant": "rename"
+            },
+            "event.category": {
+              "constant": "file"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid"
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid"
+            },
+            "process.name": {
+              "source": "Parent.FileName"
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline"
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.old_path": {
+              "source": "Child.OldFilePath",
+              "transform": [
+                "windows_path"
+              ]
+            },
+            "file.name": {
+              "source": "Child.FileName"
+            },
+            "file.size": {
+              "source": "Child.FileSize"
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "account-local-create",
+          "when": {
+            "Action.Name": "AccountCreate"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "account"
+            },
+            "event.action": {
+              "constant": "local_create"
+            },
+            "event.category": {
+              "constant": "account"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "user.target.name": {
+              "source": "Child.TargetUserName"
+            },
+            "user.target.domain": {
+              "source": "Child.TargetDomainName",
+              "on_empty": null
+            },
+            "user.target.id": {
+              "source": "Child.TargetSid"
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            }
+          }
+        },
+        {
+          "route_id": "account-local-modify",
+          "when": {
+            "Action.EventLogId": 4738
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "account"
+            },
+            "event.action": {
+              "constant": "local_modify"
+            },
+            "event.category": {
+              "constant": "account"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "user.target.name": {
+              "source": "Child.TargetUserName"
+            },
+            "user.target.domain": {
+              "source": "Child.TargetDomainName",
+              "on_empty": null
+            },
+            "user.target.id": {
+              "source": "Child.TargetSid"
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            }
+          }
+        },
+        {
+          "route_id": "account-local-delete",
+          "when": {
+            "Action.EventLogId": 4726
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "account"
+            },
+            "event.action": {
+              "constant": "local_delete"
+            },
+            "event.category": {
+              "constant": "account"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "user.target.name": {
+              "source": "Child.TargetUserName"
+            },
+            "user.target.domain": {
+              "source": "Child.TargetDomainName",
+              "on_empty": null
+            },
+            "user.target.id": {
+              "source": "Child.TargetSid"
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            }
+          }
+        },
+        {
+          "route_id": "account-login",
+          "when": {
+            "Action.Name": "LoginSuccess"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "account"
+            },
+            "event.action": {
+              "constant": "login"
+            },
+            "event.category": {
+              "constant": "authentication"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "user.target.name": {
+              "source": "Child.TargetUserName"
+            },
+            "user.target.domain": {
+              "source": "Child.TargetDomainName",
+              "on_empty": null
+            },
+            "user.target.id": {
+              "source": "Child.TargetUserSid"
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "winlog.logon.id": {
+              "source": "Child.TargetLogonId"
+            },
+            "winlog.logon.type": {
+              "source": "Child.LogonType",
+              "on_empty": null
+            },
+            "winlog.logon.authentication_package": {
+              "source": "Child.AuthenticationPackageName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "account-logoff",
+          "when": {
+            "Action.EventLogId": [
+              4634,
+              4647
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "account"
+            },
+            "event.action": {
+              "constant": "logoff"
+            },
+            "event.category": {
+              "constant": "authentication"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "user.target.name": {
+              "source": "Child.TargetUserName"
+            },
+            "user.target.domain": {
+              "source": "Child.TargetDomainName",
+              "on_empty": null
+            },
+            "user.target.id": {
+              "source": "Child.TargetUserSid"
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "winlog.logon.id": {
+              "source": "Child.TargetLogonId"
+            },
+            "winlog.logon.type": {
+              "source": "Child.LogonType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "scheduled-task-rpc-register",
+          "when": {
+            "OS": "Windows",
+            "@table": "ServiceEvents",
+            "Action.Type": "InjectHook",
+            "Action.Name": "RpcSchedTaskCreate"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "scheduled_task"
+            },
+            "event.action": {
+              "constant": "register"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "scheduled_task.name": {
+              "sources": [
+                "Child.TaskName",
+                "Child.NodeName"
+              ]
+            },
+            "scheduled_task.command": {
+              "sources": [
+                "Child.FilePath",
+                "Child.NodeName"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "scheduled_task.arguments": {
+              "source": "Child.TaskArg",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "scheduled-task-create",
+          "when": {
+            "@table": "ScheduleTaskEvents",
+            "Action.EventLogId": 4698
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "scheduled_task"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "scheduled_task.name": {
+              "sources": [
+                "Child.TaskName",
+                "Child.NodeName"
+              ]
+            },
+            "scheduled_task.content": {
+              "source": "Child.TaskContent",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "scheduled-task-modify",
+          "when": {
+            "@table": "ScheduleTaskEvents",
+            "Action.EventLogId": 4702
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "scheduled_task"
+            },
+            "event.action": {
+              "constant": "modify"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "scheduled_task.name": {
+              "sources": [
+                "Child.TaskName",
+                "Child.NodeName"
+              ]
+            },
+            "scheduled_task.content": {
+              "sources": [
+                "Child.TaskContentNew",
+                "Child.TaskContent"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "scheduled-task-delete",
+          "when": {
+            "@table": "ScheduleTaskEvents",
+            "Action.EventLogId": 4699
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "scheduled_task"
+            },
+            "event.action": {
+              "constant": "delete"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "scheduled_task.name": {
+              "sources": [
+                "Child.TaskName",
+                "Child.NodeName"
+              ]
+            },
+            "scheduled_task.content": {
+              "sources": [
+                "Child.TaskContent",
+                "Child.TaskContentNew"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "scheduled-task-candidate-discovery",
+          "when": {
+            "@table": "ScheduleTaskEvents"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "scheduled_task"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Child.SubjectUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.SubjectDomainName",
+              "on_empty": null
+            },
+            "user.id": {
+              "source": "Child.SubjectUserSid",
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId",
+              "on_empty": null
+            },
+            "scheduled_task.name": {
+              "sources": [
+                "Child.TaskName",
+                "Child.NodeName"
+              ],
+              "on_empty": null
+            },
+            "scheduled_task.content": {
+              "sources": [
+                "Child.TaskContentNew",
+                "Child.TaskContent"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-create-hook",
+          "when": {
+            "OS": "Windows",
+            "@table": "ServiceEvents",
+            "Action.Name": [
+              "CreateService",
+              "CreateServiceW",
+              "RpcCreateService"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service_api"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ]
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "sources": [
+                "Child.BinaryPath",
+                "Child.ImagePath",
+                "Child.ServiceFileName",
+                "Child.FilePath"
+              ],
+              "on_empty": null
+            },
+            "service.start_type": {
+              "sources": [
+                "Child.StartType",
+                "Child.ServiceStartType",
+                "Child.NewStartType"
+              ],
+              "on_empty": null
+            },
+            "service.account": {
+              "sources": [
+                "Child.ServiceAccount",
+                "Child.AccountName",
+                "Child.ServiceStartName"
+              ],
+              "on_empty": null
+            },
+            "service.service_type": {
+              "source": "Child.ServiceType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-create-system-event",
+          "when": {
+            "OS": "Windows",
+            "Action.EventLogId": 7045
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "sources": [
+                "Child.SubjectUserName",
+                "Parent.ProcUserName"
+              ],
+              "on_empty": null
+            },
+            "user.domain": {
+              "sources": [
+                "Child.SubjectDomainName",
+                "Parent.ProcDomainName"
+              ],
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ]
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "sources": [
+                "Child.ServiceFileName",
+                "Child.BinaryPath",
+                "Child.ImagePath",
+                "Child.FilePath"
+              ],
+              "on_empty": null
+            },
+            "service.start_type": {
+              "sources": [
+                "Child.ServiceStartType",
+                "Child.StartType",
+                "Child.NewStartType"
+              ],
+              "on_empty": null
+            },
+            "service.account": {
+              "sources": [
+                "Child.ServiceAccount",
+                "Child.AccountName",
+                "Child.ServiceStartName"
+              ],
+              "on_empty": null
+            },
+            "service.service_type": {
+              "source": "Child.ServiceType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-modify-hook",
+          "when": {
+            "OS": "Windows",
+            "@table": "ServiceEvents",
+            "Action.Name": [
+              "ChangeServiceConfig",
+              "ChangeServiceConfigW"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service_api"
+            },
+            "event.action": {
+              "constant": "modify"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ]
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "sources": [
+                "Child.BinaryPath",
+                "Child.ImagePath",
+                "Child.ServiceFileName",
+                "Child.FilePath"
+              ],
+              "on_empty": null
+            },
+            "service.start_type": {
+              "sources": [
+                "Child.NewStartType",
+                "Child.StartType",
+                "Child.ServiceStartType"
+              ],
+              "on_empty": null
+            },
+            "service.old_start_type": {
+              "sources": [
+                "Child.OldStartType",
+                "Child.ServiceOldStartType"
+              ],
+              "on_empty": null
+            },
+            "service.account": {
+              "sources": [
+                "Child.ServiceAccount",
+                "Child.AccountName",
+                "Child.ServiceStartName"
+              ],
+              "on_empty": null
+            },
+            "service.service_type": {
+              "source": "Child.ServiceType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-modify-system-event",
+          "when": {
+            "OS": "Windows",
+            "Action.EventLogId": 7040
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service"
+            },
+            "event.action": {
+              "constant": "modify"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "sources": [
+                "Child.SubjectUserName",
+                "Parent.ProcUserName"
+              ],
+              "on_empty": null
+            },
+            "user.domain": {
+              "sources": [
+                "Child.SubjectDomainName",
+                "Parent.ProcDomainName"
+              ],
+              "on_empty": null
+            },
+            "winlog.event_id": {
+              "source": "Action.EventLogId"
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ]
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.start_type": {
+              "sources": [
+                "Child.NewStartType",
+                "Child.StartType",
+                "Child.ServiceStartType"
+              ],
+              "on_empty": null
+            },
+            "service.old_start_type": {
+              "sources": [
+                "Child.OldStartType",
+                "Child.ServiceOldStartType"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-delete-hook",
+          "when": {
+            "OS": "Windows",
+            "@table": "ServiceEvents",
+            "Action.Name": [
+              "DeleteService",
+              "DeleteServiceW"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service_api"
+            },
+            "event.action": {
+              "constant": "delete"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ]
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "sources": [
+                "Child.BinaryPath",
+                "Child.ImagePath",
+                "Child.ServiceFileName",
+                "Child.FilePath"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "service-candidate-discovery",
+          "when": {
+            "OS": "Windows",
+            "@table": "ServiceEvents"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "service"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "constant": "configuration"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "service.name": {
+              "sources": [
+                "Child.ServiceName",
+                "Child.ServiceKeyName",
+                "Child.NodeName"
+              ],
+              "on_empty": null
+            },
+            "service.display_name": {
+              "sources": [
+                "Child.DisplayName",
+                "Child.ServiceDisplayName"
+              ],
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "sources": [
+                "Child.BinaryPath",
+                "Child.ImagePath",
+                "Child.ServiceFileName",
+                "Child.FilePath"
+              ],
+              "on_empty": null
+            },
+            "service.start_type": {
+              "sources": [
+                "Child.NewStartType",
+                "Child.StartType",
+                "Child.ServiceStartType"
+              ],
+              "on_empty": null
+            },
+            "service.old_start_type": {
+              "sources": [
+                "Child.OldStartType",
+                "Child.ServiceOldStartType"
+              ],
+              "on_empty": null
+            },
+            "service.account": {
+              "sources": [
+                "Child.ServiceAccount",
+                "Child.AccountName",
+                "Child.ServiceStartName"
+              ],
+              "on_empty": null
+            },
+            "service.service_type": {
+              "source": "Child.ServiceType",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "registry-create",
+          "when": {
+            "OS": "Windows",
+            "@table": "RegEvents",
+            "Action.Name": [
+              "RegCreateKey",
+              "RegCreateKeyEx",
+              "RegCreateKeyExW"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "registry"
+            },
+            "event.action": {
+              "constant": "create"
+            },
+            "event.category": {
+              "constant": "registry"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "registry.key": {
+              "sources": [
+                "Child.RegKeyPath",
+                "Child.RegPath",
+                "Child.RegistryPath",
+                "Child.RegObject"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "registry.value_name": {
+              "sources": [
+                "Child.RegValName",
+                "Child.RegValueName",
+                "Child.RegistryValueName"
+              ],
+              "on_empty": null
+            },
+            "registry.value_data": {
+              "source": "Child.RegValData",
+              "on_empty": null
+            },
+            "registry.old_value_data": {
+              "source": "Child.RegOldValData",
+              "on_empty": null
+            },
+            "registry.value_type": {
+              "source": "Child.RegValType",
+              "on_empty": null
+            },
+            "registry.old_value_type": {
+              "source": "Child.RegOldValType",
+              "on_empty": null
+            },
+            "registry.group_name": {
+              "source": "Child.RegGroupName",
+              "on_empty": null
+            },
+            "registry.monitor_name": {
+              "source": "Common.MonitorName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "registry-set-value",
+          "when": {
+            "OS": "Windows",
+            "@table": "RegEvents",
+            "Action.Name": [
+              "RegSetValue",
+              "RegSetValueEx",
+              "RegSetValueExW"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "registry"
+            },
+            "event.action": {
+              "constant": "set_value"
+            },
+            "event.category": {
+              "constant": "registry"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "registry.key": {
+              "sources": [
+                "Child.RegKeyPath",
+                "Child.RegPath",
+                "Child.RegistryPath",
+                "Child.RegObject"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "registry.value_name": {
+              "sources": [
+                "Child.RegValName",
+                "Child.RegValueName",
+                "Child.RegistryValueName"
+              ],
+              "on_empty": null
+            },
+            "registry.value_data": {
+              "source": "Child.RegValData",
+              "on_empty": null
+            },
+            "registry.old_value_data": {
+              "source": "Child.RegOldValData",
+              "on_empty": null
+            },
+            "registry.value_type": {
+              "source": "Child.RegValType",
+              "on_empty": null
+            },
+            "registry.old_value_type": {
+              "source": "Child.RegOldValType",
+              "on_empty": null
+            },
+            "registry.group_name": {
+              "source": "Child.RegGroupName",
+              "on_empty": null
+            },
+            "registry.monitor_name": {
+              "source": "Common.MonitorName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "registry-delete",
+          "when": {
+            "OS": "Windows",
+            "@table": "RegEvents",
+            "Action.Name": [
+              "RegDeleteKey",
+              "RegDeleteKeyEx",
+              "RegDeleteKeyExW",
+              "RegDeleteValue",
+              "RegDeleteValueW"
+            ]
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "registry"
+            },
+            "event.action": {
+              "constant": "delete"
+            },
+            "event.category": {
+              "constant": "registry"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "registry.key": {
+              "sources": [
+                "Child.RegKeyPath",
+                "Child.RegPath",
+                "Child.RegistryPath",
+                "Child.RegObject"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "registry.value_name": {
+              "sources": [
+                "Child.RegValName",
+                "Child.RegValueName",
+                "Child.RegistryValueName"
+              ],
+              "on_empty": null
+            },
+            "registry.value_data": {
+              "source": "Child.RegValData",
+              "on_empty": null
+            },
+            "registry.old_value_data": {
+              "source": "Child.RegOldValData",
+              "on_empty": null
+            },
+            "registry.value_type": {
+              "source": "Child.RegValType",
+              "on_empty": null
+            },
+            "registry.old_value_type": {
+              "source": "Child.RegOldValType",
+              "on_empty": null
+            },
+            "registry.group_name": {
+              "source": "Child.RegGroupName",
+              "on_empty": null
+            },
+            "registry.monitor_name": {
+              "source": "Common.MonitorName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "registry-candidate-discovery",
+          "when": {
+            "OS": "Windows",
+            "@table": "RegEvents"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "registry"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "constant": "registry"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "registry.key": {
+              "sources": [
+                "Child.RegKeyPath",
+                "Child.RegPath",
+                "Child.RegistryPath",
+                "Child.RegObject"
+              ],
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "registry.value_name": {
+              "sources": [
+                "Child.RegValName",
+                "Child.RegValueName",
+                "Child.RegistryValueName"
+              ],
+              "on_empty": null
+            },
+            "registry.value_data": {
+              "source": "Child.RegValData",
+              "on_empty": null
+            },
+            "registry.old_value_data": {
+              "source": "Child.RegOldValData",
+              "on_empty": null
+            },
+            "registry.value_type": {
+              "source": "Child.RegValType",
+              "on_empty": null
+            },
+            "registry.old_value_type": {
+              "source": "Child.RegOldValType",
+              "on_empty": null
+            },
+            "registry.group_name": {
+              "source": "Child.RegGroupName",
+              "on_empty": null
+            },
+            "registry.monitor_name": {
+              "source": "Common.MonitorName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "process-candidate-discovery",
+          "when": {
+            "OS": "Windows",
+            "@table": "ProcEvents"
+          },
+          "canonical": {
+            "event.type": {
+              "source": "Action.Type",
+              "on_empty": "unknown"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "source": "@table",
+              "on_empty": "process"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Child.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Child.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Child.ProcCmdline",
+              "on_empty": null
+            },
+            "process.start": {
+              "source": "Child.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "parent_process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "parent_process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "parent_process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "parent_process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "parent_process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "parent_process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "user.name": {
+              "source": "Child.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Child.ProcDomainName",
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "network-candidate-discovery",
+          "when": {
+            "OS": "Windows",
+            "@table": "NetworkEvents"
+          },
+          "canonical": {
+            "event.type": {
+              "constant": "network"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "constant": "network"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "network.transport": {
+              "source": "Child.Protocol",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "network.direction": {
+              "source": "Child.Direct",
+              "transform": [
+                "network_direction"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "Child.SrcIp",
+              "on_empty": null
+            },
+            "network.source_port": {
+              "source": "Child.SrcPort",
+              "on_zero": null
+            },
+            "network.destination_ip": {
+              "source": "Child.DstIp",
+              "on_empty": null
+            },
+            "network.destination_port": {
+              "source": "Child.DstPort",
+              "on_zero": null
+            },
+            "url.full": {
+              "source": "Child.Url",
+              "on_empty": null
+            },
+            "url.domain": {
+              "source": "Child.Host",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "http.request.method": {
+              "source": "Child.FlowTags",
+              "transform": [
+                "http_method"
+              ],
+              "on_empty": null
+            }
+          }
+        },
+        {
+          "route_id": "telemetry-candidate-discovery",
+          "when": {
+            "OS": "Windows"
+          },
+          "canonical": {
+            "event.type": {
+              "source": "Action.Type",
+              "on_empty": "unknown"
+            },
+            "event.action": {
+              "source": "Action.Name",
+              "on_empty": "unknown"
+            },
+            "event.category": {
+              "source": "@table",
+              "on_empty": "unknown"
+            },
+            "event.id": {
+              "source": "Common.EventUUId"
+            },
+            "event.created": {
+              "source": "Common.EventTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ]
+            },
+            "event.observed": {
+              "source": "@timestamp",
+              "transform": [
+                "parse_datetime_to_utc"
+              ],
+              "on_error": null
+            },
+            "host.id": {
+              "source": "Common.Mid"
+            },
+            "host.hostname": {
+              "source": "Environment.HostName"
+            },
+            "host.os": {
+              "source": "Environment.OsVersion"
+            },
+            "host.agent_id": {
+              "source": "Common.Guid"
+            },
+            "host.agent_version": {
+              "source": "Common.ClientVer"
+            },
+            "process.pid": {
+              "source": "Parent.ProcPid",
+              "on_zero": null
+            },
+            "process.entity_id": {
+              "source": "Parent.ProcGuid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "Parent.FileName",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "Parent.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "Parent.ProcCmdline",
+              "on_empty": null
+            },
+            "process.start": {
+              "source": "Parent.ProcCreateTime",
+              "transform": [
+                "unix_ms_to_utc"
+              ],
+              "on_zero": null
+            },
+            "process.hash.md5": {
+              "source": "Parent.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "user.name": {
+              "source": "Parent.ProcUserName",
+              "on_empty": null
+            },
+            "user.domain": {
+              "source": "Parent.ProcDomainName",
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "Child.FilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.old_path": {
+              "source": "Child.OldFilePath",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.name": {
+              "source": "Child.FileName",
+              "on_empty": null
+            },
+            "file.size": {
+              "source": "Child.FileSize",
+              "on_zero": 0
+            },
+            "file.hash.md5": {
+              "source": "Child.FileMd5",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "file.created": {
+              "source": "Child.FileCreateTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.modified": {
+              "source": "Child.FileModifyTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.accessed": {
+              "source": "Child.FileAccessTime",
+              "transform": [
+                "unix_s_to_utc"
+              ],
+              "on_zero": null
+            },
+            "file.operation_name": {
+              "source": "Child.FileCreateOpName",
+              "on_empty": null
+            },
+            "file.content_type": {
+              "source": "Child.FileContentType",
+              "on_empty": null
+            },
+            "file.format": {
+              "source": "Child.FileFormat",
+              "on_empty": null
+            },
+            "file.driver_type": {
+              "source": "Child.FileDriverType",
+              "on_empty": null
+            },
+            "file.encrypted": {
+              "source": "Child.FileEncrypted",
+              "on_empty": null
+            },
+            "file.io.read_bytes": {
+              "source": "Child.FileTotalRead",
+              "on_zero": 0
+            },
+            "file.io.write_bytes": {
+              "source": "Child.FileTotalWrite",
+              "on_zero": 0
+            }
+          }
+        }
+      ],
+      "raw_reference": {
+        "id_field": "Common.EventUUId",
+        "ordinal_base": 0
+      },
+      "unmapped_fields": {
+        "policy": "count-and-ignore",
+        "preserve_in_report": false
+      }
+    },
+    "generic": {
+      "name": "Generic Vendor Log",
+      "input": {
+        "record_selector": {},
+        "event_time": {
+          "field": "event.created",
+          "format": "iso8601"
+        },
+        "event_id_field": "event.id",
+        "host_id_field": "host.id",
+        "host_name_field": "host.hostname"
+      },
+      "routes": [
+        {
+          "route_id": "generic-event",
+          "when": {
+            "event.type": {
+              "any": true
+            }
+          },
+          "canonical": {
+            "event.type": {
+              "source": "event.type"
+            },
+            "event.action": {
+              "source": "event.action"
+            },
+            "event.id": {
+              "source": "event.id"
+            },
+            "event.created": {
+              "source": "event.created",
+              "transform": [
+                "parse_datetime_to_utc"
+              ]
+            },
+            "host.id": {
+              "source": "host.id",
+              "on_empty": null
+            },
+            "host.hostname": {
+              "source": "host.hostname",
+              "on_empty": null
+            },
+            "process.pid": {
+              "source": "process.pid",
+              "on_empty": null
+            },
+            "process.name": {
+              "source": "process.name",
+              "on_empty": null
+            },
+            "process.executable": {
+              "source": "process.executable",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "process.command_line": {
+              "source": "process.command_line",
+              "on_empty": null
+            },
+            "parent_process.pid": {
+              "source": "parent_process.pid",
+              "on_empty": null
+            },
+            "parent_process.executable": {
+              "source": "parent_process.executable",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.path": {
+              "source": "file.path",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "file.name": {
+              "source": "file.name",
+              "on_empty": null
+            },
+            "file.size": {
+              "source": "file.size",
+              "on_empty": null
+            },
+            "file.hash.md5": {
+              "source": "file.hash.md5",
+              "on_empty": null
+            },
+            "file.operation_name": {
+              "source": "file.operation_name",
+              "on_empty": null
+            },
+            "registry.key": {
+              "source": "registry.key",
+              "transform": [
+                "registry_hive_path"
+              ],
+              "on_empty": null
+            },
+            "registry.value_name": {
+              "source": "registry.value_name",
+              "on_empty": null
+            },
+            "registry.value_data": {
+              "source": "registry.value_data",
+              "on_empty": null
+            },
+            "network.transport": {
+              "source": "network.transport",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "network.source_ip": {
+              "source": "network.source_ip",
+              "on_empty": null
+            },
+            "network.source_port": {
+              "source": "network.source_port",
+              "on_empty": null
+            },
+            "network.destination_ip": {
+              "source": "network.destination_ip",
+              "on_empty": null
+            },
+            "network.destination_port": {
+              "source": "network.destination_port",
+              "on_empty": null
+            },
+            "url.full": {
+              "source": "url.full",
+              "on_empty": null
+            },
+            "dns.query.name": {
+              "source": "dns.query.name",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "service.name": {
+              "source": "service.name",
+              "on_empty": null
+            },
+            "service.display_name": {
+              "source": "service.display_name",
+              "on_empty": null
+            },
+            "service.binary_path": {
+              "source": "service.binary_path",
+              "transform": [
+                "windows_path"
+              ],
+              "on_empty": null
+            },
+            "scheduled_task.name": {
+              "source": "scheduled_task.name",
+              "on_empty": null
+            },
+            "account.name": {
+              "source": "account.name",
+              "on_empty": null
+            },
+            "hash.algorithm": {
+              "source": "hash.algorithm",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "hash.value": {
+              "source": "hash.value",
+              "transform": [
+                "lowercase"
+              ],
+              "on_empty": null
+            },
+            "pipe.name": {
+              "source": "pipe.name",
+              "on_empty": null
+            },
+            "wmi.class": {
+              "source": "wmi.class",
+              "on_empty": null
+            },
+            "wmi.name": {
+              "source": "wmi.name",
+              "on_empty": null
+            },
+            "driver.name": {
+              "source": "driver.name",
+              "on_empty": null
+            },
+            "device.device_id": {
+              "source": "device.device_id",
+              "on_empty": null
+            },
+            "agent.service_name": {
+              "source": "agent.service_name",
+              "on_empty": null
+            },
+            "powershell.script_block_id": {
+              "source": "powershell.script_block_id",
+              "on_empty": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}
